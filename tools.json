@@ -1,0 +1,14 @@
+{
+    "OpenLane": {
+        "url": "https://github.com/The-OpenROAD-Project/OpenLane",
+        "commit": "b1fb228e3196c3922b376e91675878523bb5ed58"
+    },
+    "pdk": {
+        "url": "https://github.com/RTimothyEdwards/open_pdks",
+        "commit": "933e5f2b8e42c5ec25b83c6d242455ada6f3e926"
+    },
+    "precheck": {
+        "url": "https://github.com/efabless/mpw_precheck",
+        "commit": "7222e4529d582397934a3e4c722f26cee1db1cff"
+    }
+}
