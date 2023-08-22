@@ -25,8 +25,18 @@ jobs:
       - name: Export OPENLANE ROOT
         run: echo "OPENLANE_ROOT=/home/runner/work/openlane" >> $GITHUB_ENV
 
+      - name: Export DESIGN PATH
+        run: echo "DESIGN_PATH=/home/runner/work/designs" >> $GITHUB_ENV
+
+      - name: Download Designs
+        run: |
+          mkdir -p ${{ env.DESIGN_PATH }}
+          cd ${{ env.DESIGN_PATH }}
+          python3 /home/runner/work/central_CI/.github/scripts/get_designs.py
+
       - name: Install dependencies
         run: |
+          cd ${{ env.DESIGN_PATH }}/caravel_user_project
           sudo mkdir -p ${{ env.PDK_ROOT }}
           sudo chown -R $USER:$USER ${{ env.PDK_ROOT }}
           make install
