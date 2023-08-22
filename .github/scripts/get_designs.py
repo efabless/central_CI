@@ -15,7 +15,7 @@ def clone_repo(design, commit_hash):
     """Clones the repo for the specified design with the specified commit."""
     owner = "efabless"
     repo_name = design
-    url = f"git@github.com:{owner}/{repo_name}.git"
+    url = f"https://github.com/{owner}/{repo_name}.git"
     subprocess.run(['git', 'clone', f'{url}'])
     subprocess.run(['git', 'checkout', f'{commit_hash}'], cwd=design)
     files = find_lvs_config_files(design)
