@@ -13,15 +13,48 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Export DESIGN PATH
+      - name: Export Dependencies Path
         run: echo "DEPENDENCIES_PATH=/home/runner/work/dependencies" >> $GITHUB_ENV
 
-      - name: Install Dependencies
+      - name: Download Dependencies
         run: |
           mkdir -p ${{ env.DEPENDENCIES_PATH }}
           python3 -m pip install --upgrade --no-cache-dir volare
           python3 $GITHUB_WORKSPACE/.github/scripts/install_dep.py --json $GITHUB_WORKSPACE/tools.json --output ${{ env.DEPENDENCIES_PATH }}
 
+      - name: Tarball Dependencies
+        run: |
+          tar -cf /tmp/dependencies.tar -C $DEPENDENCIES_PATH .
+
+      - name: Upload Dependencies Tarball
+        uses: actions/upload-artifact@v2
+        with:
+          name: dependencies-tarball
+          path: /tmp/dependencies.tar
+  
+  download_designs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Export DESIGN PATH
+        run: echo "DESIGN_PATH=/home/runner/work/designs" >> $GITHUB_ENV
+
+      - name: Download Designs
+        run: |
+          mkdir -p ${{ env.DESIGN_PATH }}
+          cd ${{ env.DESIGN_PATH }}
+          python3 $GITHUB_WORKSPACE/.github/scripts/get_designs.py
+
+      - name: Tarball Designs
+        run: |
+          tar -cf /tmp/designs.tar -C $DESIGN_PATH .
+
+      - name: Upload Designs Tarball
+        uses: actions/upload-artifact@v2
+        with:
+          name: designs-tarball
+          path: /tmp/designs.tar
 
   # pdk:
   #   runs-on: ubuntu-latest
