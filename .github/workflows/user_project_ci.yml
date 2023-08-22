@@ -32,7 +32,7 @@ jobs:
         run: |
           mkdir -p ${{ env.DESIGN_PATH }}
           cd ${{ env.DESIGN_PATH }}
-          find / -name "get_designs.py"
+          ls $GITHUB_WORKSPACE
           python3 /home/runner/work/central_CI/.github/scripts/get_designs.py
 
       - name: Install dependencies
