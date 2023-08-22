@@ -4,12 +4,11 @@ import volare
 import argparse
 
 
-def get_tool_data(json_file, tool):
+def get_tool_data(json_file):
     """Gets the designs from the JSON file."""
     with open(json_file) as f:
         data = json.load(f)
-    tool_data = data[tool]
-    return tool_data
+    return data
 
 
 def install_tool(tool, version, url, tool_path):
@@ -23,7 +22,7 @@ def install_tool(tool, version, url, tool_path):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--json", help="The path to the json file.")
-    parser.add_argument("--output", help="The path to the location of download.")
+    parser.add_argument("--output", help="The path to the location of download")
     args = parser.parse_args()
 
     json_file = args.json
