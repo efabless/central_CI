@@ -19,6 +19,7 @@ jobs:
       - name: Install Dependencies
         run: |
           mkdir -p ${{ env.DEPENDENCIES_PATH }}
+          python3 -m pip install --upgrade --no-cache-dir volare
           python3 $GITHUB_WORKSPACE/.github/scripts/install_dep.py --json $GITHUB_WORKSPACE/tools.json --output ${{ env.DEPENDENCIES_PATH }}
 
 
