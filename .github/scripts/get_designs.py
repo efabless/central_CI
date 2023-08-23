@@ -1,6 +1,7 @@
 import json
 import subprocess
 import os
+import threading
 
 
 def get_designs(json_file):
@@ -50,8 +51,16 @@ def find_lvs_config_files(root_dir):
 def main():
     json_file = f"{os.path.dirname(os.path.abspath(__file__))}/designs.json"
     designs = get_designs(json_file)
+    threads = []
     for design, commit_hash in designs.items():
-        clone_repo(design, commit_hash)
+        thread = threading.Thread(target=clone_repo, args=(design, commit_hash))
+        threads.append(thread)
+
+    for thread in threads:
+        thread.start()
+
+    for thread in threads:
+        thread.join()
 
 
 if __name__ == "__main__":
