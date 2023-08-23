@@ -77,7 +77,7 @@ jobs:
           echo "DESIGN_PATH=/home/runner/work/designs" >> $GITHUB_ENV
 
       - name: Download Dependencies Tarball
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: dependencies-tarball
           path: /tmp
@@ -89,7 +89,7 @@ jobs:
           tar -xf /tmp/dependencies.tar -C $DEPENDENCIES_PATH .
 
       - name: Download Designs Tarball
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: designs-tarball
           path: /tmp

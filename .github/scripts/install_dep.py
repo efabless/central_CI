@@ -14,10 +14,10 @@ def get_tool_data(json_file):
 
 def install_tool(tool, version, url, tool_path):
     if tool == "pdk":
-        volare.enable(tool_path, "sky130", version)
+        volare.enable(f'{tool_path}/pdk', "sky130", version)
     else:
-        subprocess.run(['git', 'clone', f'{url}', f'{tool}'])
-        subprocess.run(['git', 'checkout', f'{version}'], cwd=tool)
+        subprocess.run(['git', 'clone', f'{url}', f'{tool}', f'{tool_path}/{tool}'])
+        subprocess.run(['git', 'checkout', f'{version}'], cwd=f'{tool_path}/{tool}')
 
 
 def main():
