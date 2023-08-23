@@ -10,5 +10,13 @@
     "precheck": {
         "url": "https://github.com/efabless/mpw_precheck",
         "commit": "7222e4529d582397934a3e4c722f26cee1db1cff"
+    },
+    "caravel": {
+        "url": "https://github.com/efabless/caravel",
+        "commit": "4cf733832b39e92bf7143193f490e349ef08a8ad"
+    },
+    "mgmt_core_wrapper": {
+        "url": "https://github.com/efabless/caravel_mgmt_soc_litex",
+        "commit": "43d0ce33d331ee73d9dcebe197c6ce4da5909ecc"
     }
 }
