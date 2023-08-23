@@ -100,8 +100,11 @@ jobs:
           sudo chown -R $USER:$USER ${{ env.DESIGN_PATH }}
           tar -xf /tmp/designs.tar -C $DESIGN_PATH .
 
-      - name:
+      - name: harden
         run: |
+          ls ${{ env.DEPENDENCIES_PATH }}
+          ls ${{ env.DESIGN_PATH }}
+
           cd ${{ env.OPENLANE_ROOT }}
           ol_version=$(git rev-parse HEAD)
           echo "OPENLANE_IMAGE_NAME=efabless/openlane:$ol_version" >> $GITHUB_ENV
