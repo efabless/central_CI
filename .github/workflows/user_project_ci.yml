@@ -55,7 +55,7 @@ jobs:
         with:
           name: designs-tarball
           path: /tmp/designs.tar
-    
+  
   harden_designs:
     timeout-minutes: 720
     runs-on: ubuntu-latest
