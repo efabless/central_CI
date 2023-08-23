@@ -62,7 +62,7 @@ jobs:
     strategy:
       matrix:
         pdk: ["sky130A", "sky130B"]
-    needs: [pdk]
+    needs: [setup_env, download_designs]
     steps:
       - uses: actions/checkout@v3
 
@@ -107,7 +107,7 @@ jobs:
         ol_version=$(git rev-parse HEAD)
         echo "OPENLANE_IMAGE_NAME=efabless/openlane:$ol_version" >> $GITHUB_ENV
         printenv
-        
+
   # pdk:
   #   runs-on: ubuntu-latest
   #   steps:
