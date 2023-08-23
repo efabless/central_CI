@@ -2,7 +2,6 @@ import json
 import subprocess
 import volare
 import argparse
-import threading
 
 
 def get_tool_data(json_file):
@@ -30,16 +29,8 @@ def main():
     output_path = args.output
     tool_data = get_tool_data(json_file)
 
-    threads = []
     for tool, value in tool_data.items():
-        thread = threading.Thread(target=install_tool, args=(tool, value['commit'], value['url'], output_path))
-        threads.append(thread)
-
-    for thread in threads:
-        thread.start()
-
-    for thread in threads:
-        thread.join()
+        install_tool(tool, value['commit'], value['url'], output_path)
 
 
 if __name__ == "__main__":
