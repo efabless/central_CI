@@ -57,7 +57,6 @@ jobs:
           path: /tmp/designs.tar
   
   harden_designs:
-    timeout-minutes: 720
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -66,47 +65,47 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-    - name: Export Environment Variables
-      run: |
-        echo "CARAVEL_ROOT=/home/runner/work/dependencies/caravel" >> $GITHUB_ENV
-        echo "MCW_ROOT=/home/runner/work/dependencies/caravel_mgmt_soc_litex" >> $GITHUB_ENV
-        echo "PRECHECK_ROOT=/home/runner/work/dependencies/mpw_precheck" >> $GITHUB_ENV
-        echo "PDK_ROOT=/home/runner/work/dependencies/pdk" >> $GITHUB_ENV
-        echo "OPENLANE_ROOT=/home/runner/work/dependencies/OpenLane" >> $GITHUB_ENV
-        echo "PDK=${{ matrix.pdk }}" >> $GITHUB_ENV
-        echo "DEPENDENCIES_PATH=/home/runner/work/dependencies" >> $GITHUB_ENV
-        echo "DESIGN_PATH=/home/runner/work/designs" >> $GITHUB_ENV
+      - name: Export Environment Variables
+        run: |
+          echo "CARAVEL_ROOT=/home/runner/work/dependencies/caravel" >> $GITHUB_ENV
+          echo "MCW_ROOT=/home/runner/work/dependencies/caravel_mgmt_soc_litex" >> $GITHUB_ENV
+          echo "PRECHECK_ROOT=/home/runner/work/dependencies/mpw_precheck" >> $GITHUB_ENV
+          echo "PDK_ROOT=/home/runner/work/dependencies/pdk" >> $GITHUB_ENV
+          echo "OPENLANE_ROOT=/home/runner/work/dependencies/OpenLane" >> $GITHUB_ENV
+          echo "PDK=${{ matrix.pdk }}" >> $GITHUB_ENV
+          echo "DEPENDENCIES_PATH=/home/runner/work/dependencies" >> $GITHUB_ENV
+          echo "DESIGN_PATH=/home/runner/work/designs" >> $GITHUB_ENV
 
-    - name: Download Dependencies Tarball
-        uses: actions/download-artifact@v2
-        with:
-          name: dependencies-tarball
-          path: /tmp
+      - name: Download Dependencies Tarball
+          uses: actions/download-artifact@v2
+          with:
+            name: dependencies-tarball
+            path: /tmp
 
-    - name: Unpack Dependencies Tarball
-      run: |
-        sudo mkdir -p ${{ env.DEPENDENCIES_PATH }}
-        sudo chown -R $USER:$USER ${{ env.DEPENDENCIES_PATH }}
-        tar -xf /tmp/dependencies.tar -C $DEPENDENCIES_PATH .
+      - name: Unpack Dependencies Tarball
+        run: |
+          sudo mkdir -p ${{ env.DEPENDENCIES_PATH }}
+          sudo chown -R $USER:$USER ${{ env.DEPENDENCIES_PATH }}
+          tar -xf /tmp/dependencies.tar -C $DEPENDENCIES_PATH .
 
-    - name: Download Designs Tarball
-        uses: actions/download-artifact@v2
-        with:
-          name: designs-tarball
-          path: /tmp
+      - name: Download Designs Tarball
+          uses: actions/download-artifact@v2
+          with:
+            name: designs-tarball
+            path: /tmp
 
-    - name: Unpack Designs Tarball
-      run: |
-        sudo mkdir -p ${{ env.DESIGN_PATH }}
-        sudo chown -R $USER:$USER ${{ env.DESIGN_PATH }}
-        tar -xf /tmp/designs.tar -C $DESIGN_PATH .
+      - name: Unpack Designs Tarball
+        run: |
+          sudo mkdir -p ${{ env.DESIGN_PATH }}
+          sudo chown -R $USER:$USER ${{ env.DESIGN_PATH }}
+          tar -xf /tmp/designs.tar -C $DESIGN_PATH .
 
-    - name:
-      run: |
-        cd ${{ env.OPENLANE_ROOT }}
-        ol_version=$(git rev-parse HEAD)
-        echo "OPENLANE_IMAGE_NAME=efabless/openlane:$ol_version" >> $GITHUB_ENV
-        printenv
+      - name:
+        run: |
+          cd ${{ env.OPENLANE_ROOT }}
+          ol_version=$(git rev-parse HEAD)
+          echo "OPENLANE_IMAGE_NAME=efabless/openlane:$ol_version" >> $GITHUB_ENV
+          printenv
 
   # pdk:
   #   runs-on: ubuntu-latest
