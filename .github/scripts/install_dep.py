@@ -15,7 +15,7 @@ def install_tool(tool, version, url, tool_path):
     if tool == "pdk":
         volare.enable(f'{tool_path}/pdk', "sky130", version)
     else:
-        subprocess.run(['git', 'clone', f'{url}', f'{tool_path}/{tool}'])
+        subprocess.run(['git', 'clone', '--single-branch', f'{url}', f'{tool_path}/{tool}'])
         subprocess.run(['git', 'checkout', f'{version}'], cwd=f'{tool_path}/{tool}')
 
 
