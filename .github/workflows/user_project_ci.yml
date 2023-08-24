@@ -72,6 +72,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
       - name: Export Environment Variables
         run: |
           echo "CARAVEL_ROOT=/home/runner/work/dependencies/caravel" >> $GITHUB_ENV
@@ -125,13 +131,19 @@ jobs:
           sudo chown -R $USER:$USER ${{ env.DESIGN_PATH }}
           tar -xf /tmp/${{ matrix.designs }}.tar -C ${{ env.DESIGN_PATH }} .
 
-      - name: harden
+      - name: setup openlane
         run: |
           json_file=$(cat $GITHUB_WORKSPACE/tools.json)
           openlane_commit=$(echo "${json_file}" | jq -r ".OpenLane.commit")
           export OPENLANE_IMAGE_NAME=${openlane_commit}
+          export IMAGE_NAME=efabless/openlane:$(OPENLANE_TAG)
+          cd ${{ env.OPENLANE_ROOT }}
+          make pull-openlane
+
+
+      - name: harden
+        run: |
           cd ${{ env.DESIGN_PATH }}/${{ matrix.designs }}
-          ls -al
           python3 $GITHUB_WORKSPACE/.github/scripts/get_designs.py --design ${{ env.DESIGN_PATH }}/${{ matrix.designs }}
           for word in $(cat harden_sequence.txt); do
             make $word
