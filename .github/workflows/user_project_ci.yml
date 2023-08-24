@@ -10,6 +10,9 @@ on:
 jobs:
   setup_env:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dependencies: ["OpenLane", "pdk", "precheck", "caravel", "mgmt_core_wrapper"]
     steps:
       - uses: actions/checkout@v3
 
@@ -20,17 +23,17 @@ jobs:
         run: |
           mkdir -p ${{ env.DEPENDENCIES_PATH }}
           python3 -m pip install --upgrade --no-cache-dir volare
-          python3 $GITHUB_WORKSPACE/.github/scripts/install_dep.py --json $GITHUB_WORKSPACE/tools.json --output ${{ env.DEPENDENCIES_PATH }}
+          python3 $GITHUB_WORKSPACE/.github/scripts/install_dep.py --json $GITHUB_WORKSPACE/tools.json --output ${{ env.DEPENDENCIES_PATH }} --dependency ${{ matrix.dependencies }}
 
-      - name: Tarball Dependencies
+      - name: Tarball ${{ matrix.dependencies }}
         run: |
-          tar -cf /tmp/dependencies.tar -C $DEPENDENCIES_PATH .
+          tar -cf /tmp/${{ matrix.dependencies }}.tar -C $DEPENDENCIES_PATH/${{ matrix.dependencies }} .
 
-      - name: Upload Dependencies Tarball
+      - name: Upload ${{ matrix.dependencies }} Tarball
         uses: actions/upload-artifact@v3
         with:
-          name: dependencies-tarball
-          path: /tmp/dependencies.tar
+          name: ${{ matrix.dependencies }}-tarball
+          path: /tmp/${{ matrix.dependencies }}.tar
   
   download_designs:
     runs-on: ubuntu-latest
