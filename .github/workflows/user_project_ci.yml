@@ -135,8 +135,8 @@ jobs:
         run: |
           json_file=$(cat $GITHUB_WORKSPACE/tools.json)
           openlane_commit=$(echo "${json_file}" | jq -r ".OpenLane.commit")
-          export OPENLANE_IMAGE_NAME=efabless/openlane:${openlane_commit}
-          export IMAGE_NAME=efabless/openlane:${openlane_commit}
+          echo "OPENLANE_IMAGE_NAME=efabless/openlane:${openlane_commit}" >> $GITHUB_ENV
+          echo "IMAGE_NAME=efabless/openlane:${openlane_commit}" >> $GITHUB_ENV
           cd ${{ env.OPENLANE_ROOT }}
           make pull-openlane
 
