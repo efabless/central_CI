@@ -79,22 +79,40 @@ jobs:
           echo "DEPENDENCIES_PATH=/home/runner/work/dependencies" >> $GITHUB_ENV
           echo "DESIGN_PATH=/home/runner/work/designs" >> $GITHUB_ENV
 
-      - name: Download Dependencies Tarball
+      - name: Download OpenLane Tarball
         uses: actions/download-artifact@v3
         with:
-          name: dependencies-tarball
+          name: OpenLane-tarball
           path: /tmp
 
-      - name: Unpack Dependencies Tarball
+      - name: Unpack OpenLane Tarball
         run: |
-          sudo mkdir -p ${{ env.DEPENDENCIES_PATH }}
-          sudo chown -R $USER:$USER ${{ env.DEPENDENCIES_PATH }}
-          tar -xf /tmp/dependencies.tar -C $DEPENDENCIES_PATH .
+          sudo mkdir -p ${{ env.DEPENDENCIES_PATH }}/OpenLane
+          sudo chown -R $USER:$USER ${{ env.DEPENDENCIES_PATH }}/OpenLane
+          tar -xf /tmp/dependencies.tar -C $DEPENDENCIES_PATH/OpenLane .
 
-      - name: Download Designs Tarball
+      - name: Download OpenLane Tarball
         uses: actions/download-artifact@v3
         with:
-          name: designs-tarball
+          name: OpenLane-tarball
+          path: /tmp
+
+      - name: Download pdk Tarball
+        uses: actions/download-artifact@v3
+        with:
+          name: pdk-tarball
+          path: /tmp
+
+      - name: Unpack pdk Tarball
+        run: |
+          sudo mkdir -p ${{ env.DEPENDENCIES_PATH }}/pdk
+          sudo chown -R $USER:$USER ${{ env.DEPENDENCIES_PATH }}/pdk
+          tar -xf /tmp/dependencies.tar -C $DEPENDENCIES_PATH/pdk .
+
+      - name: Download pdk Tarball
+        uses: actions/download-artifact@v3
+        with:
+          name: pdk-tarball
           path: /tmp
 
       - name: Unpack Designs Tarball
