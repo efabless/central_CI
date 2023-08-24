@@ -131,6 +131,7 @@ jobs:
           openlane_commit=$(echo "${json_file}" | jq -r ".OpenLane.commit")
           export OPENLANE_IMAGE_NAME=${openlane_commit}
           cd ${{ env.DESIGN_PATH }}
+          ls -al
           python3 $GITHUB_WORKSPACE/.github/scripts/get_designs.py --design ${{ env.DESIGN_PATH }}
           cat harden_sequence.txt | while read line; do
             echo "Running make command for target: $line"
