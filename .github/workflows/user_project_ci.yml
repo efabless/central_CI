@@ -67,7 +67,7 @@ jobs:
     strategy:
       matrix:
         pdk: ["sky130A", "sky130B"]
-    inherit-matrix: download_designs
+        designs: ["caravel_user_project", "caravel_aes_example"]
     needs: [setup_env, download_designs]
     steps:
       - uses: actions/checkout@v3
