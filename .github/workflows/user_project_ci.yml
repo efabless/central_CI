@@ -37,6 +37,9 @@ jobs:
   
   download_designs:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        designs: ["caravel_user_project", "caravel_aes_example"]
     steps:
       - uses: actions/checkout@v3
 
@@ -45,19 +48,19 @@ jobs:
 
       - name: Download Designs
         run: |
-          mkdir -p ${{ env.DESIGN_PATH }}
-          cd ${{ env.DESIGN_PATH }}
-          python3 $GITHUB_WORKSPACE/.github/scripts/get_designs.py
+          mkdir -p ${{ env.DESIGN_PATH }}/${{ matrix.designs }}
+          python3 -m pip install --upgrade --no-cache-dir volare
+          python3 $GITHUB_WORKSPACE/.github/scripts/install_dep.py --json $GITHUB_WORKSPACE/.github/scripts/designs.json --output ${{ env.DESIGN_PATH }}/${{ matrix.designs }} --dependency ${{ matrix.designs }}
 
       - name: Tarball Designs
         run: |
-          tar -cf /tmp/designs.tar -C $DESIGN_PATH .
+          tar -cf /tmp/${{ matrix.designs }}.tar -C $DESIGN_PATH .
 
-      - name: Upload Designs Tarball
+      - name: Upload ${{ matrix.designs }} Tarball
         uses: actions/upload-artifact@v3
         with:
           name: designs-tarball
-          path: /tmp/designs.tar
+          path: /tmp/${{ matrix.designs }}.tar
   
   harden_designs:
     runs-on: ubuntu-latest
@@ -89,7 +92,7 @@ jobs:
         run: |
           sudo mkdir -p ${{ env.DEPENDENCIES_PATH }}/OpenLane
           sudo chown -R $USER:$USER ${{ env.DEPENDENCIES_PATH }}/OpenLane
-          tar -xf /tmp/dependencies.tar -C $DEPENDENCIES_PATH/OpenLane .
+          tar -xf /tmp/OpenLane.tar -C $DEPENDENCIES_PATH/OpenLane .
 
       - name: Download OpenLane Tarball
         uses: actions/download-artifact@v3
@@ -107,7 +110,7 @@ jobs:
         run: |
           sudo mkdir -p ${{ env.DEPENDENCIES_PATH }}/pdk
           sudo chown -R $USER:$USER ${{ env.DEPENDENCIES_PATH }}/pdk
-          tar -xf /tmp/dependencies.tar -C $DEPENDENCIES_PATH/pdk .
+          tar -xf /tmp/OpenLane.tar -C $DEPENDENCIES_PATH/pdk .
 
       - name: Download pdk Tarball
         uses: actions/download-artifact@v3
