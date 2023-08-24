@@ -99,7 +99,7 @@ jobs:
         run: |
           sudo mkdir -p ${{ env.DEPENDENCIES_PATH }}/OpenLane
           sudo chown -R $USER:$USER ${{ env.DEPENDENCIES_PATH }}/OpenLane
-          tar -xf /tmp/OpenLane.tar -C $DEPENDENCIES_PATH/OpenLane .\
+          tar -xf /tmp/OpenLane.tar -C ${{ env.DEPENDENCIES_PATH }}/OpenLane .\
 
       - name: Download pdk Tarball
         uses: actions/download-artifact@v3
@@ -111,7 +111,7 @@ jobs:
         run: |
           sudo mkdir -p ${{ env.DEPENDENCIES_PATH }}/pdk
           sudo chown -R $USER:$USER ${{ env.DEPENDENCIES_PATH }}/pdk
-          tar -xf /tmp/pdk.tar -C $DEPENDENCIES_PATH/pdk .
+          tar -xf /tmp/pdk.tar -C ${{ env.DEPENDENCIES_PATH }}/pdk .
 
       - name: Download ${{ matrix.designs }} Tarball
         uses: actions/download-artifact@v3
@@ -139,6 +139,7 @@ jobs:
 
       - name: harden
         run: |
+          ls ${{ env.PDK_ROOT }}
           cd ${{ env.DESIGN_PATH }}/${{ matrix.designs }}
           python3 $GITHUB_WORKSPACE/.github/scripts/get_designs.py --design ${{ env.DESIGN_PATH }}/${{ matrix.designs }}
           for word in $(cat harden_sequence.txt); do
