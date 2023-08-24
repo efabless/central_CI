@@ -81,7 +81,7 @@ jobs:
           echo "OPENLANE_ROOT=/home/runner/work/dependencies/OpenLane" >> $GITHUB_ENV
           echo "PDK=${{ matrix.pdk }}" >> $GITHUB_ENV
           echo "DEPENDENCIES_PATH=/home/runner/work/dependencies" >> $GITHUB_ENV
-          echo "DESIGN_PATH=/home/runner/work/designs" >> $GITHUB_ENV
+          echo "DESIGN_PATH=/home/runner/work/designs/${{ matrix.designs }}" >> $GITHUB_ENV
 
       - name: Download OpenLane Tarball
         uses: actions/download-artifact@v3
@@ -121,18 +121,21 @@ jobs:
 
       - name: Unpack ${{ matrix.designs }} Tarball
         run: |
-          sudo mkdir -p ${{ env.DESIGN_PATH }}/${{ matrix.designs }}
-          sudo chown -R $USER:$USER ${{ env.DESIGN_PATH }}/${{ matrix.designs }}
-          tar -xf /tmp/${{ matrix.designs }}.tar -C ${{ env.DESIGN_PATH }}/${{ matrix.designs }} .
+          sudo mkdir -p ${{ env.DESIGN_PATH }}
+          sudo chown -R $USER:$USER ${{ env.DESIGN_PATH }}
+          tar -xf /tmp/${{ matrix.designs }}.tar -C ${{ env.DESIGN_PATH }} .
 
       - name: harden
         run: |
-          ls ${{ env.DEPENDENCIES_PATH }}
-          ls ${{ env.DESIGN_PATH }}
           json_file=$(cat $GITHUB_WORKSPACE/tools.json)
           openlane_commit=$(echo "${json_file}" | jq -r ".OpenLane.commit")
           export OPENLANE_IMAGE_NAME=${openlane_commit}
-          printenv
+          cd ${{ env.DESIGN_PATH }}
+          python3 $GITHUB_WORKSPACE/.github/scripts/get_designs.py --design ${{ env.DESIGN_PATH }}
+          cat harden_sequence.txt | while read line; do
+            echo "Running make command for target: $line"
+            make $line
+          done
 
   # pdk:
   #   runs-on: ubuntu-latest
