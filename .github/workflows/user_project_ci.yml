@@ -67,6 +67,7 @@ jobs:
     strategy:
       matrix:
         pdk: ["sky130A", "sky130B"]
+    inherit-matrix: download_designs
     needs: [setup_env, download_designs]
     steps:
       - uses: actions/checkout@v3
@@ -112,17 +113,17 @@ jobs:
           sudo chown -R $USER:$USER ${{ env.DEPENDENCIES_PATH }}/pdk
           tar -xf /tmp/OpenLane.tar -C $DEPENDENCIES_PATH/pdk .
 
-      - name: Download pdk Tarball
+      - name: Download ${{ matrix.designs }} Tarball
         uses: actions/download-artifact@v3
         with:
-          name: pdk-tarball
+          name: ${{ matrix.designs }}-tarball
           path: /tmp
 
-      - name: Unpack Designs Tarball
+      - name: Unpack ${{ matrix.designs }} Tarball
         run: |
-          sudo mkdir -p ${{ env.DESIGN_PATH }}
-          sudo chown -R $USER:$USER ${{ env.DESIGN_PATH }}
-          tar -xf /tmp/designs.tar -C $DESIGN_PATH .
+          sudo mkdir -p ${{ env.DESIGN_PATH }}/${{ matrix.designs }}
+          sudo chown -R $USER:$USER ${{ env.DESIGN_PATH }}/${{ matrix.designs }}
+          tar -xf /tmp/${{ matrix.designs }}.tar -C ${{ env.DESIGN_PATH }}/${{ matrix.designs }} .
 
       - name: harden
         run: |
