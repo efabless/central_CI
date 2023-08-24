@@ -99,13 +99,7 @@ jobs:
         run: |
           sudo mkdir -p ${{ env.DEPENDENCIES_PATH }}/OpenLane
           sudo chown -R $USER:$USER ${{ env.DEPENDENCIES_PATH }}/OpenLane
-          tar -xf /tmp/OpenLane.tar -C $DEPENDENCIES_PATH/OpenLane .
-
-      - name: Download OpenLane Tarball
-        uses: actions/download-artifact@v3
-        with:
-          name: OpenLane-tarball
-          path: /tmp
+          tar -xf /tmp/OpenLane.tar -C $DEPENDENCIES_PATH/OpenLane .\
 
       - name: Download pdk Tarball
         uses: actions/download-artifact@v3
@@ -117,7 +111,7 @@ jobs:
         run: |
           sudo mkdir -p ${{ env.DEPENDENCIES_PATH }}/pdk
           sudo chown -R $USER:$USER ${{ env.DEPENDENCIES_PATH }}/pdk
-          tar -xf /tmp/OpenLane.tar -C $DEPENDENCIES_PATH/pdk .
+          tar -xf /tmp/pdk.tar -C $DEPENDENCIES_PATH/pdk .
 
       - name: Download ${{ matrix.designs }} Tarball
         uses: actions/download-artifact@v3
@@ -135,6 +129,8 @@ jobs:
         run: |
           json_file=$(cat $GITHUB_WORKSPACE/tools.json)
           openlane_commit=$(echo "${json_file}" | jq -r ".OpenLane.commit")
+          export OPENLANE_IMAGE_NAME=efabless/openlane:${openlane_commit}
+          export IMAGE_NAME=efabless/openlane:${openlane_commit}
           echo "OPENLANE_IMAGE_NAME=efabless/openlane:${openlane_commit}" >> $GITHUB_ENV
           echo "IMAGE_NAME=efabless/openlane:${openlane_commit}" >> $GITHUB_ENV
           cd ${{ env.OPENLANE_ROOT }}
