@@ -133,9 +133,8 @@ jobs:
           cd ${{ env.DESIGN_PATH }}/${{ matrix.designs }}
           ls -al
           python3 $GITHUB_WORKSPACE/.github/scripts/get_designs.py --design ${{ env.DESIGN_PATH }}/${{ matrix.designs }}
-          cat harden_sequence.txt | while read line; do
-            echo "Running make command for target: $line"
-            make $line
+          for word in $(cat harden_sequence.txt); do
+            make $word
           done
 
   # pdk:
