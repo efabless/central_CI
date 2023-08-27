@@ -22,7 +22,7 @@ jobs:
         if: ${{ env.NO_UPDATE != '1' }}
         uses: peter-evans/create-pull-request@v4
         with:
-          token: ${{ secrets.MY_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           title: "[BOT] Update ${{ env.TOOL }}"
           author: ${{ vars.BOT_AUTHOR_LINE }}
           committer: ${{ vars.BOT_AUTHOR_LINE }}
