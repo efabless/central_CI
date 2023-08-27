@@ -1,9 +1,9 @@
 name: Nightly CI
 on:
-  # Runs on Every Push
-  push:
-  # Runs on Pull Requests
-  pull_request:
+  # Runs every day at midnight UTC
+  schedule:
+    - cron: "0 0 * * *"
+  # Manual Dispatch
   workflow_dispatch:
 
 jobs:
