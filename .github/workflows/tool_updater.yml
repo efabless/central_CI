@@ -9,36 +9,29 @@ on:
 jobs:
   check-commits:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        tools: [pdk, OpenLane, caravel, precheck, mgmt_core_wrapper]
     steps:
       - uses: actions/checkout@v2
       - name: Parse JSON file
         run: |
-          echo "Parsing JSON file..."
-          json_file=$(cat $GITHUB_WORKSPACE/tools.json)
-          repos=$(echo $json_file | jq -r 'keys[]')
-          for repo in $repos; do
-            commit=$(echo $json_file | jq -r ".[$repo] | .commit")
-            url=$(echo $json_file | jq -r ".[$repo] | .url")
-            echo "Latest commit for $repo is $commit at $url"
-          done
+          python3 $GITHUB_WORKSPACE/.github/scripts/update_tool.py --json $GITHUB_WORKSPACE/tools.json --tool ${{ matrix.tools }}
 
-      - name: Get latest commits
-        run: |
-          for repo in $repos; do
-            latest_commit=$(curl -s $url/commits/master | jq -r '.[0].sha')
-            echo "Latest commit for $repo is $latest_commit"
-            echo "Updating JSON file..."
-            json_file=$(jq ".[$repo] |= {commit: $latest_commit}" $json_file)
-            echo $json_file > $GITHUB_WORKSPACE/tools.json
-          done
-
-      - name: Create PR
-        uses: actions/github-pr@v2
+      - name: Create Pull Request
+        if: ${{ env.NO_UPDATE != '1' }}
+        uses: peter-evans/create-pull-request@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          title: Update JSON file with latest commits
+          token: ${{ secrets.MY_TOKEN }}
+          title: "[BOT] Update ${{ env.TOOL }}"
+          author: ${{ vars.BOT_AUTHOR_LINE }}
+          committer: ${{ vars.BOT_AUTHOR_LINE }}
           body: |
-            Updates the JSON file with the latest commits from the following repos:
-            $repos
-          branch: update-json-file
-          base: main
+            This is an automated PR.
+
+            See the individual commits for details.
+          commit-message: |
+            [BOT] Update ${{ matrix.tools }}
+          branch: ${{ matrix.tools }}-update-branch
+          push-to-fork: ${{ vars.FORK_NAME }}
+          delete-branch: true

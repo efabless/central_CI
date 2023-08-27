@@ -4,7 +4,7 @@
         "commit": "b1fb228e3196c3922b376e91675878523bb5ed58"
     },
     "pdk": {
-        "url": "https://github.com/RTimothyEdwards/open_pdks",
+        "url": "https://github.com/efabless/volare",
         "commit": "933e5f2b8e42c5ec25b83c6d242455ada6f3e926"
     },
     "precheck": {
