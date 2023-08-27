@@ -43,7 +43,7 @@ def main():
 
             if commit != latest_commit:
                 print(f"The commit for {repo} is not the latest. Commit SHA is {commit}. Latest commit SHA is {latest_commit}.")
-                export_env_default('NO_UPDATE', '0')
+                export_env_default('NO_UPDATE', '2')
             else:
                 export_env_default('NO_UPDATE', '1')
 
