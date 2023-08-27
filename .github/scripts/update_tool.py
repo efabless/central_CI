@@ -19,6 +19,7 @@ def get_latest_commit(repo, repo_url):
 
 
 def export_env_default(key, value):
+    print(os.getenv("GITHUB_ENV"))
     with open(os.getenv("GITHUB_ENV"), "a") as f:
         f.write("%s=%s\n" % (key, value))
 
@@ -41,6 +42,7 @@ def main():
             latest_commit = get_latest_commit(repo, url)
 
             if commit != latest_commit:
+                print(f"The commit for {repo} is not the latest. Commit SHA is {commit}. Latest commit SHA is {latest_commit}.")
                 export_env_default('NO_UPDATE', '0')
             else:
                 export_env_default('NO_UPDATE', '1')
