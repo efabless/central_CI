@@ -18,6 +18,11 @@ def get_latest_commit(repo, repo_url):
     return sha
 
 
+def export_env_default(key, value):
+    with open(os.getenv("GITHUB_ENV"), "a") as f:
+        f.write("%s=%s\n" % (key, value))
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--json", help="The path to the json file.")
@@ -36,9 +41,9 @@ def main():
             latest_commit = get_latest_commit(repo, url)
 
             if commit != latest_commit:
-                os.environ['NO_UPDATE'] = '0'
+                export_env_default('NO_UPDATE', '0')
             else:
-                os.environ['NO_UPDATE'] = '1'
+                export_env_default('NO_UPDATE', '1')
 
 
 if __name__ == "__main__":

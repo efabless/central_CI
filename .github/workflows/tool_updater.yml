@@ -13,7 +13,7 @@ jobs:
       matrix:
         tools: [pdk, OpenLane, caravel, precheck, mgmt_core_wrapper]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Parse JSON file
         run: |
           python3 $GITHUB_WORKSPACE/.github/scripts/update_tool.py --json $GITHUB_WORKSPACE/tools.json --tool ${{ matrix.tools }}
