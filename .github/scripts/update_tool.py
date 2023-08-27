@@ -44,7 +44,7 @@ def main():
             if commit != latest_commit:
                 repo_data["commit"] = latest_commit
                 with open(json_file, "w") as f:
-                    json.dump(data, f)
+                    json.dump(data, f, indent=4)
                 export_env_default('NO_UPDATE', '0')
             else:
                 export_env_default('NO_UPDATE', '1')
