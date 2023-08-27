@@ -23,13 +23,14 @@ jobs:
           done
 
       - name: Get latest commits
-        for repo in $repos; do
-          latest_commit=$(curl -s $url/commits/master | jq -r '.[0].sha')
-          echo "Latest commit for $repo is $latest_commit"
-          echo "Updating JSON file..."
-          json_file=$(jq ".[$repo] |= {commit: $latest_commit}" $json_file)
-          echo $json_file > $GITHUB_WORKSPACE/tools.json
-        done
+        run: |
+          for repo in $repos; do
+            latest_commit=$(curl -s $url/commits/master | jq -r '.[0].sha')
+            echo "Latest commit for $repo is $latest_commit"
+            echo "Updating JSON file..."
+            json_file=$(jq ".[$repo] |= {commit: $latest_commit}" $json_file)
+            echo $json_file > $GITHUB_WORKSPACE/tools.json
+          done
 
       - name: Create PR
         uses: actions/github-pr@v2
