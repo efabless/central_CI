@@ -42,8 +42,10 @@ def main():
             latest_commit = get_latest_commit(repo, url)
 
             if commit != latest_commit:
-                print(f"The commit for {repo} is not the latest. Commit SHA is {commit}. Latest commit SHA is {latest_commit}.")
-                export_env_default('NO_UPDATE', '2')
+                repo_data["commit"] = latest_commit
+                with open(json_file, "w") as f:
+                    json.dump(data, f)
+                export_env_default('NO_UPDATE', '0')
             else:
                 export_env_default('NO_UPDATE', '1')
 
