@@ -19,6 +19,7 @@ jobs:
           cat $GITHUB_ENV
           python3 $GITHUB_WORKSPACE/.github/scripts/update_tool.py --json $GITHUB_WORKSPACE/tools.json --tool ${{ matrix.tools }}
           cat $GITHUB_ENV
+          echo ${{ env.NO_UPDATE }}
 
       - name: Create Pull Request
         if: ${{ env.NO_UPDATE != '1' }}
