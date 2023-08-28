@@ -9,7 +9,7 @@
     },
     "precheck": {
         "url": "https://github.com/efabless/mpw_precheck",
-        "commit": "7222e4529d582397934a3e4c722f26cee1db1cff"
+        "commit": "a6c661c1c609c634055a15bc33cd119c8ce089f5"
     },
     "caravel": {
         "url": "https://github.com/efabless/caravel-lite",
