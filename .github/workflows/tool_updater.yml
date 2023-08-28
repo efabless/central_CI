@@ -1,9 +1,9 @@
 name: Nightly CI
 on:
-  # Runs every day at midnight UTC
-  schedule:
-    - cron: "0 0 * * *"
-  # Manual Dispatch
+  # Runs on Every Push
+  push:
+  # Runs on Pull Requests
+  pull_request:
   workflow_dispatch:
 
 jobs:
@@ -11,21 +11,18 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        tools: [pdk, OpenLane, caravel, precheck, mgmt_core_wrapper]
+        tools: [pdk, OpenLane, caravel, precheck, mgmt_core_wrapper, caravel_user_project, caravel_aes_example]
     steps:
       - uses: actions/checkout@v3
       - name: Parse JSON file
         run: |
-          cat $GITHUB_ENV
-          python3 $GITHUB_WORKSPACE/.github/scripts/update_tool.py --json $GITHUB_WORKSPACE/tools.json --tool ${{ matrix.tools }}
-          cat $GITHUB_ENV
-          echo ${{ env.NO_UPDATE }}
+          python3 $GITHUB_WORKSPACE/.github/scripts/update_tool.py --json $GITHUB_WORKSPACE --tool ${{ matrix.tools }}
 
       - name: Create Pull Request
         if: ${{ env.NO_UPDATE != '1' }}
         uses: peter-evans/create-pull-request@v5
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.MY_TOKEN }}
           title: "[BOT] Update ${{ matrix.tools }}"
           body: |
             This is an automated PR.
