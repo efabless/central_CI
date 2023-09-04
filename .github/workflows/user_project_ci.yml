@@ -237,7 +237,7 @@ jobs:
           export OUTPUT=$OUTPUT_DIRECTORY/logs/precheck.log
           export PDKPATH=${{ env.DEPENDENCIES_PATH }}/pdk/${{ env.PDK }}
 
-          docker run -v "${{ env.PRECHECK_ROOT }}":"${{ env.PRECHECK_ROOT }}" -v "${{ env.DESIGN_PATH }}":"${{ env.DESIGN_PATH }}" -v "${{ env.PDK_ROOT }}":"${{ env.PDK_ROOT }}" -e INPUT_DIRECTORY="${{ env.DESIGN_PATH }}" -e PDK_ROOT="${{ env.PDK_ROOT }}" -e PDKPATH="${{ env.PDKPATH }}" -u $(id -u "$USER"):$(id -g "$USER") efabless/mpw_precheck:latest bash -c "cd $PRECHECK_ROOT; python3 mpw_precheck.py --input_directory $${{ env.DESIGN_PATH }} --pdk_path ${{ env.PDKPATH }} --output_directory $OUTPUT_DIRECTORY license makefile consistency xor magic_drc klayout_beol klayout_feol klayout_met_min_ca_density klayout_offgrid klayout_pin_label_purposes_overlapping_drawing klayout_zeroarea lvs"
+          docker run -v "${{ env.PRECHECK_ROOT }}":"${{ env.PRECHECK_ROOT }}" -v "${{ env.DESIGN_PATH }}":"${{ env.DESIGN_PATH }}" -v "${{ env.PDK_ROOT }}":"${{ env.PDK_ROOT }}" -e INPUT_DIRECTORY="${{ env.DESIGN_PATH }}" -e PDK_ROOT="${{ env.PDK_ROOT }}" -e PDKPATH="${{ env.PDKPATH }}" -u $(id -u "$USER"):$(id -g "$USER") efabless/mpw_precheck:latest bash -c "cd $PRECHECK_ROOT; python3 mpw_precheck.py --input_directory $${{ env.DESIGN_PATH }} --pdk_path $PDKPATH --output_directory $OUTPUT_DIRECTORY license makefile consistency xor magic_drc klayout_beol klayout_feol klayout_met_min_ca_density klayout_offgrid klayout_pin_label_purposes_overlapping_drawing klayout_zeroarea lvs"
 
           cnt=$(grep -c "All Checks Passed" "$OUTPUT")
           if ! [[ $cnt ]]; then cnt=0; fi
