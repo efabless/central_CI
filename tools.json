@@ -18,5 +18,9 @@
     "mgmt_core_wrapper": {
         "url": "https://github.com/efabless/caravel_mgmt_soc_litex",
         "commit": "43d0ce33d331ee73d9dcebe197c6ce4da5909ecc"
+    },
+    "timing_scripts": {
+        "url": "https://github.com/efabless/timing-scripts.git",
+        "commit": "168b53a8c92655a37924d6338149bf5a5ec8838c"
     }
 }

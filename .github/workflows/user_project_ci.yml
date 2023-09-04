@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dependencies: ["OpenLane", "pdk", "precheck", "caravel", "mgmt_core_wrapper"]
+        dependencies: ["OpenLane", "pdk", "precheck", "caravel", "mgmt_core_wrapper", "timing_scripts"]
     steps:
       - uses: actions/checkout@v3
 
@@ -274,11 +274,14 @@ jobs:
           echo "CARAVEL_ROOT=/home/runner/work/dependencies/caravel" >> $GITHUB_ENV
           echo "MCW_ROOT=/home/runner/work/dependencies/caravel_mgmt_soc_litex" >> $GITHUB_ENV
           echo "PRECHECK_ROOT=/home/runner/work/dependencies/mpw_precheck" >> $GITHUB_ENV
+          echo "TIMING_ROOT=/home/runner/work/dependencies/timing_scripts" >> $GITHUB_ENV
           echo "PDK_ROOT=/home/runner/work/dependencies/pdk/pdk" >> $GITHUB_ENV
           echo "OPENLANE_ROOT=/home/runner/work/dependencies/OpenLane" >> $GITHUB_ENV
           echo "PDK=${{ matrix.pdk }}" >> $GITHUB_ENV
           echo "DEPENDENCIES_PATH=/home/runner/work/dependencies" >> $GITHUB_ENV
           echo "DESIGN_PATH=/home/runner/work/designs/${{ matrix.designs }}" >> $GITHUB_ENV
+          echo "CUP_ROOT=/home/runner/work/designs/${{ matrix.designs }}" >> $GITHUB_ENV
+          echo "PROJECT_ROOT=/home/runner/work/designs/${{ matrix.designs }}" >> $GITHUB_ENV
 
       - name: Download pdk Tarball
         uses: actions/download-artifact@v3
@@ -315,6 +318,18 @@ jobs:
           sudo mkdir -p ${{ env.MCW_ROOT }}
           sudo chown -R $USER:$USER ${{ env.MCW_ROOT }}
           tar -xf /tmp/mgmt_core_wrapper.tar -C ${{ env.MCW_ROOT }} .
+
+      - name: Download timing_scripts Tarball
+        uses: actions/download-artifact@v3
+        with:
+          name: timing_scripts-tarball
+          path: /tmp
+
+      - name: Unpack timing_scripts Tarball
+        run: |
+          sudo mkdir -p ${{ env.TIMING_ROOT }}
+          sudo chown -R $USER:$USER ${{ env.TIMING_ROOT }}
+          tar -xf /tmp/timing_scripts.tar -C ${{ env.TIMING_ROOT }} .
 
       - name: Download ${{ matrix.designs }} Tarball
         uses: actions/download-artifact@v3
