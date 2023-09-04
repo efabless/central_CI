@@ -251,3 +251,103 @@ jobs:
           name: error
           path: |
             /home/runner/work/${{ env.DESIGN_PATH }}/${{ matrix.design }}/mpw_precheck_result/logs/*
+  
+  run_sta:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        pdk: ["sky130A", "sky130B"]
+        designs: ["caravel_user_project"]
+    needs: [harden_designs]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Export Environment Variables
+        run: |
+          echo "CARAVEL_ROOT=/home/runner/work/dependencies/caravel" >> $GITHUB_ENV
+          echo "MCW_ROOT=/home/runner/work/dependencies/caravel_mgmt_soc_litex" >> $GITHUB_ENV
+          echo "PRECHECK_ROOT=/home/runner/work/dependencies/mpw_precheck" >> $GITHUB_ENV
+          echo "PDK_ROOT=/home/runner/work/dependencies/pdk/pdk" >> $GITHUB_ENV
+          echo "OPENLANE_ROOT=/home/runner/work/dependencies/OpenLane" >> $GITHUB_ENV
+          echo "PDK=${{ matrix.pdk }}" >> $GITHUB_ENV
+          echo "DEPENDENCIES_PATH=/home/runner/work/dependencies" >> $GITHUB_ENV
+          echo "DESIGN_PATH=/home/runner/work/designs/${{ matrix.designs }}" >> $GITHUB_ENV
+
+      - name: Download pdk Tarball
+        uses: actions/download-artifact@v3
+        with:
+          name: pdk-tarball
+          path: /tmp
+
+      - name: Unpack pdk Tarball
+        run: |
+          sudo mkdir -p ${{ env.DEPENDENCIES_PATH }}/pdk
+          sudo chown -R $USER:$USER ${{ env.DEPENDENCIES_PATH }}/pdk
+          tar -xf /tmp/pdk.tar -C ${{ env.DEPENDENCIES_PATH }}/pdk .
+
+      - name: Download caravel Tarball
+        uses: actions/download-artifact@v3
+        with:
+          name: caravel-tarball
+          path: /tmp
+
+      - name: Unpack caravel Tarball
+        run: |
+          sudo mkdir -p ${{ env.CARAVEL_ROOT }}
+          sudo chown -R $USER:$USER ${{ env.CARAVEL_ROOT }}
+          tar -xf /tmp/caravel.tar -C ${{ env.CARAVEL_ROOT }} .
+
+      - name: Download mgmt_core_wrapper Tarball
+        uses: actions/download-artifact@v3
+        with:
+          name: mgmt_core_wrapper-tarball
+          path: /tmp
+
+      - name: Unpack mgmt_core_wrapper Tarball
+        run: |
+          sudo mkdir -p ${{ env.MCW_ROOT }}
+          sudo chown -R $USER:$USER ${{ env.MCW_ROOT }}
+          tar -xf /tmp/mgmt_core_wrapper.tar -C ${{ env.MCW_ROOT }} .
+
+      - name: Download ${{ matrix.designs }} Tarball
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ matrix.designs }}-tarball
+          path: /tmp
+
+      - name: Unpack ${{ matrix.designs }} Tarball
+        run: |
+          sudo mkdir -p ${{ env.DESIGN_PATH }}
+          sudo chown -R $USER:$USER ${{ env.DESIGN_PATH }}
+          tar -xf /tmp/${{ matrix.designs }}.tar -C ${{ env.DESIGN_PATH }} .
+
+      - name: run sta
+        run: |
+          cd ${{ env.DESIGN_PATH }}
+          make extract-parasitics
+          make create-spef-mapping
+          make caravel-sta
+          tar -cf /tmp/timing.tar ${{ env.DESIGN_PATH }}/signoff/caravel/openlane-signoff/timing
+          vio=$(grep -c "vio(" ${{ env.DESIGN_PATH }}/signoff/caravel/openlane-signoff/timing/all-summary.rpt || true)
+          if [[ $vio -gt 0 ]];
+          then 
+            echo "STA violation count: $vio"
+            exit 2 
+          else
+            echo "STA run passed"
+            exit 0
+          fi
+
+      - name: upload sta reports
+        uses: actions/upload-artifact@v2
+        with:
+          name: sta-reports
+          path: |
+            /tmp/timing.tar
