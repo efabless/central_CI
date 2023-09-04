@@ -65,8 +65,8 @@ jobs:
   harden_designs:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        fail-fast: false
         pdk: ["sky130A", "sky130B"]
         designs: ["caravel_user_project"]
     needs: [setup_env, download_designs]
@@ -173,8 +173,8 @@ jobs:
   run_precheck:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        fail-fast: false
         pdk: ["sky130A", "sky130B"]
         designs: ["caravel_user_project"]
     needs: [harden_designs]
