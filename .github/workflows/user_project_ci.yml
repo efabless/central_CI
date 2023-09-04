@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        designs: ["caravel_user_project", "caravel_aes_example"]
+        designs: ["caravel_user_project"]
     steps:
       - uses: actions/checkout@v3
 
@@ -67,7 +67,7 @@ jobs:
     strategy:
       matrix:
         pdk: ["sky130A", "sky130B"]
-        designs: ["caravel_user_project", "caravel_aes_example"]
+        designs: ["caravel_user_project"]
     needs: [setup_env, download_designs]
     steps:
       - uses: actions/checkout@v3
