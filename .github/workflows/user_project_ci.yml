@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dependencies: ["OpenLane", "pdk", "precheck", "caravel", "mgmt_core_wrapper", "timing_scripts"]
+        dependencies: ["OpenLane", "pdk", "precheck", "timing_scripts"]
     steps:
       - uses: actions/checkout@v3
 
