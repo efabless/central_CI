@@ -189,7 +189,7 @@ jobs:
 
       - name: Export Environment Variables
         run: |
-          echo "PRECHECK_ROOT=/home/runner/work/dependencies/mpw_precheck" >> $GITHUB_ENV
+          echo "PRECHECK_ROOT=/home/runner/work/dependencies/mpw_precheck/mpw_precheck" >> $GITHUB_ENV
           echo "PDK_ROOT=/home/runner/work/dependencies/pdk/pdk" >> $GITHUB_ENV
           echo "PDK=${{ matrix.pdk }}" >> $GITHUB_ENV
           echo "DEPENDENCIES_PATH=/home/runner/work/dependencies" >> $GITHUB_ENV
@@ -233,7 +233,7 @@ jobs:
 
       - name: run precheck
         run: |
-          export INPUT_DIRECTORY=${{ env.DESIGN_PATH }}/${{ matrix.design }}
+          export INPUT_DIRECTORY=${{ env.DESIGN_PATH }}/${{ matrix.design }}/${{ matrix.design }}
           export OUTPUT_DIRECTORY=$INPUT_DIRECTORY/mpw_precheck_result
           export OUTPUT=$OUTPUT_DIRECTORY/logs/precheck.log
           export PDKPATH=${{ env.DEPENDENCIES_PATH }}/pdk/${{ env.PDK }}
@@ -272,12 +272,12 @@ jobs:
 
       - name: Export Environment Variables
         run: |
-          echo "CARAVEL_ROOT=/home/runner/work/dependencies/caravel" >> $GITHUB_ENV
-          echo "MCW_ROOT=/home/runner/work/dependencies/caravel_mgmt_soc_litex" >> $GITHUB_ENV
-          echo "PRECHECK_ROOT=/home/runner/work/dependencies/mpw_precheck" >> $GITHUB_ENV
-          echo "TIMING_ROOT=/home/runner/work/dependencies/timing_scripts" >> $GITHUB_ENV
+          echo "CARAVEL_ROOT=/home/runner/work/dependencies/caravel/caravel" >> $GITHUB_ENV
+          echo "MCW_ROOT=/home/runner/work/dependencies/caravel_mgmt_soc_litex/caravel_mgmt_soc_litex" >> $GITHUB_ENV
+          echo "PRECHECK_ROOT=/home/runner/work/dependencies/mpw_precheck/mpw_precheck" >> $GITHUB_ENV
+          echo "TIMING_ROOT=/home/runner/work/dependencies/timing_scripts/timing_scripts" >> $GITHUB_ENV
           echo "PDK_ROOT=/home/runner/work/dependencies/pdk/pdk" >> $GITHUB_ENV
-          echo "OPENLANE_ROOT=/home/runner/work/dependencies/OpenLane" >> $GITHUB_ENV
+          echo "OPENLANE_ROOT=/home/runner/work/dependencies/OpenLane/OpenLane" >> $GITHUB_ENV
           echo "PDK=${{ matrix.pdk }}" >> $GITHUB_ENV
           echo "DEPENDENCIES_PATH=/home/runner/work/dependencies" >> $GITHUB_ENV
           echo "DESIGN_PATH=/home/runner/work/designs/${{ matrix.designs }}" >> $GITHUB_ENV
@@ -344,8 +344,8 @@ jobs:
 
       - name: run sta
         run: |
-          export CUP_ROOT=${{ env.DESIGN_PATH }}/${{ matrix.designs }}
-          export PROJECT_ROOT=${{ env.DESIGN_PATH }}/${{ matrix.designs }}
+          export CUP_ROOT=${{ env.DESIGN_PATH }}/${{ matrix.designs }}/${{ matrix.designs }}
+          export PROJECT_ROOT=${{ env.DESIGN_PATH }}/${{ matrix.designs }}/${{ matrix.designs }}
           cd $CUP_ROOT
           make extract-parasitics
           make create-spef-mapping
