@@ -81,11 +81,11 @@ jobs:
 
       - name: Export Environment Variables
         run: |
-          echo "PRECHECK_ROOT=/home/runner/work/dependencies/mpw_precheck/mpw_precheck/mpw_precheck/mpw_precheck" >> $GITHUB_ENV
+          echo "PRECHECK_ROOT=/home/runner/work/dependencies/mpw_precheck" >> $GITHUB_ENV
           echo "PDK_ROOT=/home/runner/work/dependencies/pdk/pdk" >> $GITHUB_ENV
           echo "PDK=${{ matrix.pdk }}" >> $GITHUB_ENV
           echo "DEPENDENCIES_PATH=/home/runner/work/dependencies" >> $GITHUB_ENV
-          echo "DESIGN_PATH=/home/runner/work/designs/${{ matrix.designs }}/${{ matrix.designs }}/${{ matrix.designs }}/${{ matrix.designs }}/${{ matrix.designs }}" >> $GITHUB_ENV
+          echo "DESIGN_PATH=/home/runner/work/designs/${{ matrix.designs }}" >> $GITHUB_ENV
 
       - name: Download pdk Tarball
         uses: actions/download-artifact@v3
@@ -127,11 +127,11 @@ jobs:
         run: |
           export OUTPUT_DIRECTORY=${{ env.DESIGN_PATH }}/mpw_precheck_result
           export OUTPUT=$OUTPUT_DIRECTORY/logs/precheck.log
-          cd ${{ env.DESIGN_PATH }}
+          cd ${{ env.DESIGN_PATH }}/${{ matrix.designs }}/${{ matrix.designs }}
           tree
-          cd ${{ env.PRECHECK_ROOT }}
+          cd ${{ env.PRECHECK_ROOT }}/precheck
           tree
-          docker run -v "${{ env.PRECHECK_ROOT }}":"${{ env.PRECHECK_ROOT }}" -v "${{ env.DESIGN_PATH }}":"${{ env.DESIGN_PATH }}" -v "${{ env.PDK_ROOT }}":"${{ env.PDK_ROOT }}" -e INPUT_DIRECTORY="${{ env.DESIGN_PATH }}" -e PDK_ROOT="${{ env.PDK_ROOT }}" -e PDKPATH="${{ env.PDK_ROOT }}/${{ env.PDK }}" -u $(id -u "$USER"):$(id -g "$USER") efabless/mpw_precheck:latest bash -c "cd $PRECHECK_ROOT; python3 mpw_precheck.py --input_directory ${{ env.DESIGN_PATH }} --pdk_path $PDKPATH --output_directory $OUTPUT_DIRECTORY license makefile consistency xor magic_drc klayout_beol klayout_feol klayout_met_min_ca_density klayout_offgrid klayout_pin_label_purposes_overlapping_drawing klayout_zeroarea lvs"
+          docker run -v "${{ env.PRECHECK_ROOT }}/precheck":"${{ env.PRECHECK_ROOT }}/precheck" -v "${{ env.DESIGN_PATH }}/${{ matrix.designs }}/${{ matrix.designs }}":"${{ env.DESIGN_PATH }}/${{ matrix.designs }}/${{ matrix.designs }}" -v "${{ env.PDK_ROOT }}":"${{ env.PDK_ROOT }}" -e INPUT_DIRECTORY="${{ env.DESIGN_PATH }}/${{ matrix.designs }}/${{ matrix.designs }}" -e PDK_ROOT="${{ env.PDK_ROOT }}" -e PDKPATH="${{ env.PDK_ROOT }}/${{ env.PDK }}" -u $(id -u "$USER"):$(id -g "$USER") efabless/mpw_precheck:latest bash -c "cd $PRECHECK_ROOT; python3 mpw_precheck.py --input_directory ${{ env.DESIGN_PATH }}/${{ matrix.designs }}/${{ matrix.designs }} --pdk_path $PDKPATH --output_directory $OUTPUT_DIRECTORY license makefile consistency xor magic_drc klayout_beol klayout_feol klayout_met_min_ca_density klayout_offgrid klayout_pin_label_purposes_overlapping_drawing klayout_zeroarea lvs"
           cnt=$(grep -c "All Checks Passed" "$OUTPUT")
           if ! [[ $cnt ]]; then cnt=0; fi
           if [[ $cnt -eq 1 ]]; then exit 0; fi
@@ -143,5 +143,5 @@ jobs:
         with:
           name: error
           path: |
-            /home/runner/work/${{ env.DESIGN_PATH }}/${{ matrix.design }}/mpw_precheck_result/logs/*
+            /home/runner/work/${{ env.DESIGN_PATH }}/${{ matrix.design }}/${{ matrix.design }}/mpw_precheck_result/logs/*
           
