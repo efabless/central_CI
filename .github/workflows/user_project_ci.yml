@@ -14,7 +14,7 @@ jobs:
       matrix:
         dependencies: ["OpenLane", "pdk", "precheck", "caravel", "mgmt_core_wrapper", "timing_scripts"]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Export Dependencies Path
         run: echo "DEPENDENCIES_PATH=/home/runner/work/dependencies" >> $GITHUB_ENV
@@ -30,7 +30,7 @@ jobs:
           tar -cf /tmp/${{ matrix.dependencies }}.tar -C $DEPENDENCIES_PATH/${{ matrix.dependencies }} .
 
       - name: Upload ${{ matrix.dependencies }} Tarball
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.dependencies }}-tarball
           path: /tmp/${{ matrix.dependencies }}.tar
@@ -41,7 +41,7 @@ jobs:
       matrix:
         designs: ["caravel_user_project"]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Export DESIGN PATH
         run: echo "DESIGN_PATH=/home/runner/work/designs" >> $GITHUB_ENV
@@ -57,7 +57,7 @@ jobs:
           tar -cf /tmp/${{ matrix.designs }}.tar -C $DESIGN_PATH .
 
       - name: Upload ${{ matrix.designs }} Tarball
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.designs }}-tarball
           path: /tmp/${{ matrix.designs }}.tar
@@ -71,7 +71,7 @@ jobs:
   #       designs: ["caravel_user_project"]
   #   needs: [setup_env, download_designs]
   #   steps:
-  #     - uses: actions/checkout@v2
+  #     - uses: actions/checkout@v3
 
   #     - name: Set up QEMU
   #       uses: docker/setup-qemu-action@v1
@@ -91,7 +91,7 @@ jobs:
   #         echo "DESIGN_PATH=/home/runner/work/designs/${{ matrix.designs }}" >> $GITHUB_ENV
 
   #     - name: Download OpenLane Tarball
-  #       uses: actions/download-artifact@v2
+  #       uses: actions/download-artifact@v3
   #       with:
   #         name: OpenLane-tarball
   #         path: /tmp
@@ -103,7 +103,7 @@ jobs:
   #         tar -xf /tmp/OpenLane.tar -C ${{ env.DEPENDENCIES_PATH }}/OpenLane .\
 
   #     - name: Download pdk Tarball
-  #       uses: actions/download-artifact@v2
+  #       uses: actions/download-artifact@v3
   #       with:
   #         name: pdk-tarball
   #         path: /tmp
@@ -115,7 +115,7 @@ jobs:
   #         tar -xf /tmp/pdk.tar -C ${{ env.DEPENDENCIES_PATH }}/pdk .
 
   #     - name: Download ${{ matrix.designs }} Tarball
-  #       uses: actions/download-artifact@v2
+  #       uses: actions/download-artifact@v3
   #       with:
   #         name: ${{ matrix.designs }}-tarball
   #         path: /tmp
@@ -149,7 +149,7 @@ jobs:
       
   #     - name: upload failure logs
   #       if: failure()
-  #       uses: actions/upload-artifact@v2
+  #       uses: actions/upload-artifact@v3
   #       with:
   #         name: error
   #         path: |
@@ -165,7 +165,7 @@ jobs:
   #         tar -cf /tmp/${{ matrix.designs }}.tar -C $DESIGN_PATH .
 
   #     - name: Upload ${{ matrix.designs }} Tarball
-  #       uses: actions/upload-artifact@v2
+  #       uses: actions/upload-artifact@v3
   #       with:
   #         name: ${{ matrix.designs }}-tarball
   #         path: /tmp/${{ matrix.designs }}.tar
@@ -179,7 +179,7 @@ jobs:
         designs: ["caravel_user_project"]
     needs: [setup_env, download_designs]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
@@ -196,7 +196,7 @@ jobs:
           echo "DESIGN_PATH=/home/runner/work/designs/${{ matrix.designs }}" >> $GITHUB_ENV
 
       - name: Download pdk Tarball
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: pdk-tarball
           path: /tmp
@@ -208,7 +208,7 @@ jobs:
           tar -xf /tmp/pdk.tar -C ${{ env.DEPENDENCIES_PATH }}/pdk .
 
       - name: Download ${{ matrix.designs }} Tarball
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: ${{ matrix.designs }}-tarball
           path: /tmp
@@ -220,7 +220,7 @@ jobs:
           tar -xf /tmp/${{ matrix.designs }}.tar -C ${{ env.DESIGN_PATH }} .
 
       - name: Download precheck Tarball
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: precheck-tarball
           path: /tmp
@@ -233,11 +233,12 @@ jobs:
 
       - name: run precheck
         run: |
-          export OUTPUT_DIRECTORY=${{ env.DESIGN_PATH }}/mpw_precheck_result
+          export INPUT_DIRECTORY=${{ env.DESIGN_PATH }}/${{ matrix.design }}
+          export OUTPUT_DIRECTORY=$INPUT_DIRECTORY/mpw_precheck_result
           export OUTPUT=$OUTPUT_DIRECTORY/logs/precheck.log
           export PDKPATH=${{ env.DEPENDENCIES_PATH }}/pdk/${{ env.PDK }}
 
-          docker run -v "${{ env.PRECHECK_ROOT }}":"${{ env.PRECHECK_ROOT }}" -v "${{ env.DESIGN_PATH }}":"${{ env.DESIGN_PATH }}" -v "${{ env.PDK_ROOT }}":"${{ env.PDK_ROOT }}" -e INPUT_DIRECTORY="${{ env.DESIGN_PATH }}" -e PDK_ROOT="${{ env.PDK_ROOT }}" -e PDKPATH="${{ env.PDKPATH }}" -u $(id -u "$USER"):$(id -g "$USER") efabless/mpw_precheck:latest bash -c "cd $PRECHECK_ROOT; python3 mpw_precheck.py --input_directory $${{ env.DESIGN_PATH }} --pdk_path $PDKPATH --output_directory $OUTPUT_DIRECTORY license makefile consistency xor magic_drc klayout_beol klayout_feol klayout_met_min_ca_density klayout_offgrid klayout_pin_label_purposes_overlapping_drawing klayout_zeroarea lvs"
+          docker run -v "${{ env.PRECHECK_ROOT }}":"${{ env.PRECHECK_ROOT }}" -v "$INPUT_DIRECTORY":"$INPUT_DIRECTORY" -v "${{ env.PDK_ROOT }}":"${{ env.PDK_ROOT }}" -e INPUT_DIRECTORY="$INPUT_DIRECTORY" -e PDK_ROOT="${{ env.PDK_ROOT }}" -e PDKPATH="$PDKPATH" -u $(id -u "$USER"):$(id -g "$USER") efabless/mpw_precheck:latest bash -c "cd $PRECHECK_ROOT; python3 mpw_precheck.py --input_directory $INPUT_DIRECTORY --pdk_path $PDKPATH --output_directory $OUTPUT_DIRECTORY license makefile consistency xor magic_drc klayout_beol klayout_feol klayout_met_min_ca_density klayout_offgrid klayout_pin_label_purposes_overlapping_drawing klayout_zeroarea lvs"
 
           cnt=$(grep -c "All Checks Passed" "$OUTPUT")
           if ! [[ $cnt ]]; then cnt=0; fi
@@ -246,7 +247,7 @@ jobs:
       
       - name: upload failure logs
         if: failure()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: error
           path: |
@@ -261,7 +262,7 @@ jobs:
         designs: ["caravel_user_project"]
     needs: [setup_env, download_designs]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
@@ -280,11 +281,9 @@ jobs:
           echo "PDK=${{ matrix.pdk }}" >> $GITHUB_ENV
           echo "DEPENDENCIES_PATH=/home/runner/work/dependencies" >> $GITHUB_ENV
           echo "DESIGN_PATH=/home/runner/work/designs/${{ matrix.designs }}" >> $GITHUB_ENV
-          echo "CUP_ROOT=${{ env.DESIGN_PATH }}/${{ matrix.designs }}" >> $GITHUB_ENV
-          echo "PROJECT_ROOT=${{ env.DESIGN_PATH }}/${{ matrix.designs }}" >> $GITHUB_ENV
 
       - name: Download pdk Tarball
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: pdk-tarball
           path: /tmp
@@ -296,7 +295,7 @@ jobs:
           tar -xf /tmp/pdk.tar -C ${{ env.DEPENDENCIES_PATH }}/pdk .
 
       - name: Download caravel Tarball
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: caravel-tarball
           path: /tmp
@@ -308,7 +307,7 @@ jobs:
           tar -xf /tmp/caravel.tar -C ${{ env.CARAVEL_ROOT }} .
 
       - name: Download mgmt_core_wrapper Tarball
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: mgmt_core_wrapper-tarball
           path: /tmp
@@ -320,7 +319,7 @@ jobs:
           tar -xf /tmp/mgmt_core_wrapper.tar -C ${{ env.MCW_ROOT }} .
 
       - name: Download timing_scripts Tarball
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: timing_scripts-tarball
           path: /tmp
@@ -332,7 +331,7 @@ jobs:
           tar -xf /tmp/timing_scripts.tar -C ${{ env.TIMING_ROOT }} .
 
       - name: Download ${{ matrix.designs }} Tarball
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: ${{ matrix.designs }}-tarball
           path: /tmp
@@ -345,12 +344,14 @@ jobs:
 
       - name: run sta
         run: |
-          cd ${{ env.CUP_ROOT }}
+          export CUP_ROOT=${{ env.DESIGN_PATH }}/${{ matrix.designs }}
+          export PROJECT_ROOT=${{ env.DESIGN_PATH }}/${{ matrix.designs }}
+          cd $CUP_ROOT
           make extract-parasitics
           make create-spef-mapping
           make caravel-sta
-          tar -cf /tmp/timing.tar ${{ env.CUP_ROOT }}/signoff/caravel/openlane-signoff/timing
-          vio=$(grep -c "vio(" ${{ env.CUP_ROOT }}/signoff/caravel/openlane-signoff/timing/all-summary.rpt || true)
+          tar -cf /tmp/timing.tar $CUP_ROOT/signoff/caravel/openlane-signoff/timing
+          vio=$(grep -c "vio(" $CUP_ROOT/signoff/caravel/openlane-signoff/timing/all-summary.rpt || true)
           if [[ $vio -gt 0 ]];
           then 
             echo "STA violation count: $vio"
@@ -361,7 +362,7 @@ jobs:
           fi
 
       - name: upload sta reports
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: sta-reports
           path: |
