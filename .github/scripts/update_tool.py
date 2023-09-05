@@ -27,29 +27,26 @@ def export_env_default(key, value):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--json", help="The path to the json file.")
-    parser.add_argument("--tool", help="tool to update")
     args = parser.parse_args()
 
     json_file = args.json
-    tool = args.tool
     json_files = [f"{json_file}/tools.json", f"{json_file}/.github/scripts/designs.json"]
     for json_file in json_files:
         with open(json_file) as f:
             data = json.load(f)
 
         for repo, repo_data in data.items():
-            if repo == tool:
-                commit = repo_data["commit"]
-                url = repo_data["url"]
-                latest_commit = get_latest_commit(repo, url)
+            commit = repo_data["commit"]
+            url = repo_data["url"]
+            latest_commit = get_latest_commit(repo, url)
 
-                if commit != latest_commit:
-                    repo_data["commit"] = latest_commit
-                    with open(json_file, "w") as f:
-                        json.dump(data, f, indent=4)
-                    export_env_default('NO_UPDATE', '0')
-                else:
-                    export_env_default('NO_UPDATE', '1')
+            if commit != latest_commit:
+                repo_data["commit"] = latest_commit
+                with open(json_file, "w") as f:
+                    json.dump(data, f, indent=4)
+                export_env_default('NO_UPDATE', '0')
+            else:
+                export_env_default('NO_UPDATE', '1')
 
 
 if __name__ == "__main__":
