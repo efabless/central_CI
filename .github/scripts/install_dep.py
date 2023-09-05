@@ -1,7 +1,9 @@
 import json
+import os
+import tarfile
+import requests
 import volare
 import argparse
-import subprocess
 
 
 def get_tool_data(json_file):
@@ -15,9 +17,17 @@ def install_tool(tool, version, url, tool_path):
     if tool == "pdk":
         volare.enable(f'{tool_path}/pdk', "sky130", version)
     else:
-        ps = subprocess.Popen(['curl', '-L', f'{url}/tarball/{version}'], cwd=tool_path, stdout=subprocess.PIPE)
-        subprocess.check_output(['tar', '-xvzC', '.', '--strip-components=1'], cwd=tool_path, stdin=ps.stdout)
-        ps.wait()
+        name = url.split("/")[-1]
+        owner = url.split("/")[-2]
+        response = requests.get(f'{url}/tarball/{version}')
+        with open(f'{tool_path}/{version}.tar.gz', 'wb') as file:
+            file.write(response.content)
+
+        tar = tarfile.open(f'{tool_path}/{version}.tar.gz', 'r:gz')
+        tar.extractall(path=tool_path)
+        tar.close()
+        os.rename(f'{tool_path}/{owner}-{name}-{version[0:7]}', f'{tool_path}/{tool}')
+        os.remove(f'{tool_path}/{version}.tar.gz')
 
 
 def main():
