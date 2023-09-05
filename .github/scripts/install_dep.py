@@ -19,11 +19,13 @@ def install_tool(tool, version, url, tool_path):
     else:
         name = url.split("/")[-1]
         owner = url.split("/")[-2]
+        print(f"downloading {tool}")
         response = requests.get(f'{url}/tarball/{version}')
         if response.status_code != 200:
             raise Exception(f"Failed to download {tool}")
         with open(f'{tool_path}/{version}.tar.gz', 'wb') as file:
             file.write(response.content)
+        print(f"extracting {tool_path}/{version}.tar.gz")
 
         tar = tarfile.open(f'{tool_path}/{version}.tar.gz', 'r:gz')
         tar.extractall(path=tool_path)
