@@ -5,7 +5,7 @@
     },
     "pdk": {
         "url": "https://github.com/efabless/volare",
-        "commit": "933e5f2b8e42c5ec25b83c6d242455ada6f3e926"
+        "commit": "1341f54f5ce0c4955326297f235e4ace1eb6d419"
     },
     "precheck": {
         "url": "https://github.com/efabless/mpw_precheck",
