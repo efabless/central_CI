@@ -125,9 +125,9 @@ jobs:
 
       - name: run precheck
         run: |
-          export OUTPUT_DIRECTORY=${{ env.DESIGN_PATH }}/mpw_precheck_result
-          export OUTPUT=${{ env.DESIGN_PATH }}/mpw_precheck_result/logs/precheck.log
-          docker run -v "${{ env.PRECHECK_ROOT }}/precheck":"${{ env.PRECHECK_ROOT }}/precheck" -v "${{ env.DESIGN_PATH }}/${{ matrix.designs }}/${{ matrix.designs }}":"${{ env.DESIGN_PATH }}/${{ matrix.designs }}/${{ matrix.designs }}" -v "${{ env.PDK_ROOT }}":"${{ env.PDK_ROOT }}" -e INPUT_DIRECTORY="${{ env.DESIGN_PATH }}/${{ matrix.designs }}/${{ matrix.designs }}" -e PDK_ROOT="${{ env.PDK_ROOT }}" -e PDKPATH="${{ env.PDK_ROOT }}/${{ env.PDK }}" -u $(id -u "$USER"):$(id -g "$USER") efabless/mpw_precheck:latest bash -c "cd ${{ env.PRECHECK_ROOT }}/precheck; python3 mpw_precheck.py --input_directory ${{ env.DESIGN_PATH }}/${{ matrix.designs }}/${{ matrix.designs }} --pdk_path ${{ env.PDK_ROOT }}/${{ env.PDK }} --output_directory ${{ env.DESIGN_PATH }}/mpw_precheck_result license makefile consistency xor magic_drc klayout_beol klayout_feol klayout_met_min_ca_density klayout_offgrid klayout_pin_label_purposes_overlapping_drawing klayout_zeroarea lvs"
+          export OUTPUT_DIRECTORY=${{ env.DESIGN_PATH }}/${{ matrix.designs }}/${{ matrix.designs }}/mpw_precheck_result
+          export OUTPUT=$OUTPUT_DIRECTORY/logs/precheck.log
+          docker run -v "${{ env.PRECHECK_ROOT }}/precheck":"${{ env.PRECHECK_ROOT }}/precheck" -v "${{ env.DESIGN_PATH }}/${{ matrix.designs }}/${{ matrix.designs }}":"${{ env.DESIGN_PATH }}/${{ matrix.designs }}/${{ matrix.designs }}" -v "${{ env.PDK_ROOT }}":"${{ env.PDK_ROOT }}" -e INPUT_DIRECTORY="${{ env.DESIGN_PATH }}/${{ matrix.designs }}/${{ matrix.designs }}" -e PDK_ROOT="${{ env.PDK_ROOT }}" -e PDKPATH="${{ env.PDK_ROOT }}/${{ env.PDK }}" -u $(id -u "$USER"):$(id -g "$USER") efabless/mpw_precheck:latest bash -c "cd ${{ env.PRECHECK_ROOT }}/precheck; python3 mpw_precheck.py --input_directory ${{ env.DESIGN_PATH }}/${{ matrix.designs }}/${{ matrix.designs }} --pdk_path ${{ env.PDK_ROOT }}/${{ env.PDK }} --output_directory $OUTPUT_DIRECTORY license makefile consistency xor magic_drc klayout_beol klayout_feol klayout_met_min_ca_density klayout_offgrid klayout_pin_label_purposes_overlapping_drawing klayout_zeroarea lvs"
           cnt=$(grep -c "All Checks Passed" "$OUTPUT")
           if ! [[ $cnt ]]; then cnt=0; fi
           if [[ $cnt -eq 1 ]]; then exit 0; fi
