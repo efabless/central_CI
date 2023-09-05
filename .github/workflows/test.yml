@@ -1,0 +1,134 @@
+name: CI
+
+on:
+  # Runs on Every Push
+  push:
+  # Runs on Pull Requests
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  setup_env:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dependencies: ["precheck"]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Export Dependencies Path
+        run: echo "DEPENDENCIES_PATH=/home/runner/work/dependencies" >> $GITHUB_ENV
+
+      - name: Download Dependencies
+        run: |
+          mkdir -p ${{ env.DEPENDENCIES_PATH }}/${{ matrix.dependencies }}
+          python3 -m pip install --upgrade --no-cache-dir volare
+          python3 $GITHUB_WORKSPACE/.github/scripts/install_dep.py --json $GITHUB_WORKSPACE/tools.json --output ${{ env.DEPENDENCIES_PATH }}/${{ matrix.dependencies }} --dependency ${{ matrix.dependencies }}
+
+      - name: Tarball ${{ matrix.dependencies }}
+        run: |
+          tar -cf /tmp/${{ matrix.dependencies }}.tar -C $DEPENDENCIES_PATH/${{ matrix.dependencies }} .
+
+      - name: Upload ${{ matrix.dependencies }} Tarball
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.dependencies }}-tarball
+          path: /tmp/${{ matrix.dependencies }}.tar
+  
+  download_designs:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        designs: ["caravel_user_project"]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Export DESIGN PATH
+        run: echo "DESIGN_PATH=/home/runner/work/designs" >> $GITHUB_ENV
+
+      - name: Download Designs
+        run: |
+          mkdir -p ${{ env.DESIGN_PATH }}/${{ matrix.designs }}
+          python3 -m pip install --upgrade --no-cache-dir volare
+          python3 $GITHUB_WORKSPACE/.github/scripts/install_dep.py --json $GITHUB_WORKSPACE/.github/scripts/designs.json --output ${{ env.DESIGN_PATH }}/${{ matrix.designs }} --dependency ${{ matrix.designs }}
+
+      - name: Tarball Designs
+        run: |
+          tar -cf /tmp/${{ matrix.designs }}.tar -C $DESIGN_PATH .
+
+      - name: Upload ${{ matrix.designs }} Tarball
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.designs }}-tarball
+          path: /tmp/${{ matrix.designs }}.tar
+  
+  run_precheck:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        pdk: ["sky130A", "sky130B"]
+        designs: ["caravel_user_project"]
+    needs: [setup_env, download_designs]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Export Environment Variables
+        run: |
+          echo "PRECHECK_ROOT=/home/runner/work/dependencies/mpw_precheck/mpw_precheck/mpw_precheck" >> $GITHUB_ENV
+          echo "PDK_ROOT=/home/runner/work/dependencies/pdk/pdk" >> $GITHUB_ENV
+          echo "PDK=${{ matrix.pdk }}" >> $GITHUB_ENV
+          echo "DEPENDENCIES_PATH=/home/runner/work/dependencies" >> $GITHUB_ENV
+          echo "DESIGN_PATH=/home/runner/work/designs/${{ matrix.designs }}/${{ matrix.designs }}/${{ matrix.designs }}" >> $GITHUB_ENV
+
+      - name: Download pdk Tarball
+        uses: actions/download-artifact@v3
+        with:
+          name: pdk-tarball
+          path: /tmp
+
+      - name: Unpack pdk Tarball
+        run: |
+          sudo mkdir -p ${{ env.DEPENDENCIES_PATH }}/pdk
+          sudo chown -R $USER:$USER ${{ env.DEPENDENCIES_PATH }}/pdk
+          tar -xf /tmp/pdk.tar -C ${{ env.DEPENDENCIES_PATH }}/pdk .
+
+      - name: Download ${{ matrix.designs }} Tarball
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ matrix.designs }}-tarball
+          path: /tmp
+
+      - name: Unpack ${{ matrix.designs }} Tarball
+        run: |
+          sudo mkdir -p ${{ env.DESIGN_PATH }}
+          sudo chown -R $USER:$USER ${{ env.DESIGN_PATH }}
+          tar -xf /tmp/${{ matrix.designs }}.tar -C ${{ env.DESIGN_PATH }} .
+
+      - name: Download precheck Tarball
+        uses: actions/download-artifact@v3
+        with:
+          name: precheck-tarball
+          path: /tmp
+
+      - name: Unpack precheck Tarball
+        run: |
+          sudo mkdir -p ${{ env.PRECHECK_ROOT }}
+          sudo chown -R $USER:$USER ${{ env.PRECHECK_ROOT }}
+          tar -xf /tmp/precheck.tar -C ${{ env.PRECHECK_ROOT }} .
+
+      - name: run precheck
+        run: |
+          export OUTPUT_DIRECTORY=${{ env.DESIGN_PATH }}/mpw_precheck_result
+          export OUTPUT=$OUTPUT_DIRECTORY/logs/precheck.log
+          cd ${{ env.DESIGN_PATH }}
+          tree
+          cd ${{ env.PRECHECK_ROOT }}
+          tree
+          
