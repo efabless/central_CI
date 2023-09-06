@@ -321,7 +321,7 @@ jobs:
       - name: Export Environment Variables
         run: |
           echo "CARAVEL_ROOT=/home/runner/work/dependencies/caravel" >> $GITHUB_ENV
-          echo "MCW_ROOT=/home/runner/work/dependencies/caravel_mgmt_soc_litex" >> $GITHUB_ENV
+          echo "MCW_ROOT=/home/runner/work/dependencies/mgmt_core_wrapper" >> $GITHUB_ENV
           echo "TIMING_ROOT=/home/runner/work/dependencies/timing_scripts" >> $GITHUB_ENV
           echo "PDK_ROOT=/home/runner/work/dependencies/pdk" >> $GITHUB_ENV
           echo "PDK=${{ matrix.pdk }}" >> $GITHUB_ENV
@@ -392,9 +392,6 @@ jobs:
         run: |
           export CUP_ROOT=${{ env.DESIGN_PATH }}
           export PROJECT_ROOT=${{ env.DESIGN_PATH }}
-          export CARAVEL_ROOT=/home/runner/work/dependencies/caravel
-          export MCW_ROOT=/home/runner/work/dependencies/mgmt_core_wrapper
-          export TIMING_ROOT=/home/runner/work/dependencies/timing_scripts
           cd $CUP_ROOT
           make extract-parasitics
           make create-spef-mapping
