@@ -21,9 +21,9 @@ jobs:
 
       - name: Download Dependencies
         run: |
-          mkdir -p ${{ env.DEPENDENCIES_PATH }}/${{ matrix.dependencies }}
+          mkdir -p ${{ env.DEPENDENCIES_PATH }}
           python3 -m pip install --upgrade --no-cache-dir volare
-          python3 $GITHUB_WORKSPACE/.github/scripts/install_dep.py --json $GITHUB_WORKSPACE/tools.json --output ${{ env.DEPENDENCIES_PATH }}/${{ matrix.dependencies }} --dependency ${{ matrix.dependencies }}
+          python3 $GITHUB_WORKSPACE/.github/scripts/install_dep.py --json $GITHUB_WORKSPACE/tools.json --output ${{ env.DEPENDENCIES_PATH }} --dependency ${{ matrix.dependencies }}
 
       - name: Tarball ${{ matrix.dependencies }}
         run: |
@@ -48,13 +48,13 @@ jobs:
 
       - name: Download Designs
         run: |
-          mkdir -p ${{ env.DESIGN_PATH }}/${{ matrix.designs }}
+          mkdir -p ${{ env.DESIGN_PATH }}
           python3 -m pip install --upgrade --no-cache-dir volare
-          python3 $GITHUB_WORKSPACE/.github/scripts/install_dep.py --json $GITHUB_WORKSPACE/.github/scripts/designs.json --output ${{ env.DESIGN_PATH }}/${{ matrix.designs }} --dependency ${{ matrix.designs }}
+          python3 $GITHUB_WORKSPACE/.github/scripts/install_dep.py --json $GITHUB_WORKSPACE/.github/scripts/designs.json --output ${{ env.DESIGN_PATH }} --dependency ${{ matrix.designs }}
 
       - name: Tarball Designs
         run: |
-          tar -cf /tmp/${{ matrix.designs }}.tar -C $DESIGN_PATH .
+          tar -cf /tmp/${{ matrix.designs }}.tar -C $DESIGN_PATH/${{ matrix.designs }} .
 
       - name: Upload ${{ matrix.designs }} Tarball
         uses: actions/upload-artifact@v3
@@ -76,9 +76,9 @@ jobs:
 
       - name: Download Dependencies
         run: |
-          mkdir -p ${{ env.DEPENDENCIES_PATH }}/${{ matrix.dependencies }}
+          mkdir -p ${{ env.DEPENDENCIES_PATH }}
           python3 -m pip install --upgrade --no-cache-dir volare
-          python3 $GITHUB_WORKSPACE/.github/scripts/install_dep.py --json $GITHUB_WORKSPACE/tools.json --output ${{ env.DEPENDENCIES_PATH }}/${{ matrix.dependencies }} --dependency ${{ matrix.dependencies }}
+          python3 $GITHUB_WORKSPACE/.github/scripts/install_dep.py --json $GITHUB_WORKSPACE/tools.json --output ${{ env.DEPENDENCIES_PATH }} --dependency ${{ matrix.dependencies }}
 
       - name: Tarball ${{ matrix.dependencies }}
         run: |
@@ -104,9 +104,9 @@ jobs:
 
       - name: Download Dependencies
         run: |
-          mkdir -p ${{ env.DEPENDENCIES_PATH }}/${{ matrix.dependencies }}
+          mkdir -p ${{ env.DEPENDENCIES_PATH }}
           python3 -m pip install --upgrade --no-cache-dir volare
-          python3 $GITHUB_WORKSPACE/.github/scripts/install_dep.py --json $GITHUB_WORKSPACE/tools.json --output ${{ env.DEPENDENCIES_PATH }}/${{ matrix.dependencies }} --dependency ${{ matrix.dependencies }}
+          python3 $GITHUB_WORKSPACE/.github/scripts/install_dep.py --json $GITHUB_WORKSPACE/tools.json --output ${{ env.DEPENDENCIES_PATH }} --dependency ${{ matrix.dependencies }}
 
       - name: Tarball ${{ matrix.dependencies }}
         run: |
@@ -187,15 +187,14 @@ jobs:
           export IMAGE_NAME=efabless/openlane:${openlane_commit}
           echo "OPENLANE_IMAGE_NAME=efabless/openlane:${openlane_commit}" >> $GITHUB_ENV
           echo "IMAGE_NAME=efabless/openlane:${openlane_commit}" >> $GITHUB_ENV
-          cd ${{ env.OPENLANE_ROOT }}/OpenLane
+          cd ${{ env.OPENLANE_ROOT }}
           make pull-openlane
 
 
       - name: harden
         run: |
-          export OPENLANE_ROOT=/home/runner/work/dependencies/OpenLane/OpenLane
-          cd ${{ env.DESIGN_PATH }}/${{ matrix.designs }}/${{ matrix.designs }}
-          python3 $GITHUB_WORKSPACE/.github/scripts/get_designs.py --design ${{ env.DESIGN_PATH }}/${{ matrix.designs }}/${{ matrix.designs }}
+          cd ${{ env.DESIGN_PATH }}
+          python3 $GITHUB_WORKSPACE/.github/scripts/get_designs.py --design ${{ env.DESIGN_PATH }}
           for word in $(cat harden_sequence.txt); do
             make $word
           done
@@ -206,11 +205,11 @@ jobs:
         with:
           name: error
           path: |
-            /home/runner/work/${{ env.DESIGN_PATH }}/${{ matrix.designs }}/${{ matrix.designs }}/openlane/*/runs
+            /home/runner/work/${{ env.DESIGN_PATH }}/openlane/*/runs
 
       - name: cleanup
         run: |
-          cd ${{ env.DESIGN_PATH }}/${{ matrix.designs }}/${{ matrix.designs }}
+          cd ${{ env.DESIGN_PATH }}
           rm -rf openlane/*/runs
 
       - name: Tarball Designs
@@ -286,9 +285,9 @@ jobs:
 
       - name: run precheck
         run: |
-          export OUTPUT_DIRECTORY=${{ env.DESIGN_PATH }}/${{ matrix.designs }}/${{ matrix.designs }}/mpw_precheck_result
+          export OUTPUT_DIRECTORY=${{ env.DESIGN_PATH }}/mpw_precheck_result
           export OUTPUT=$OUTPUT_DIRECTORY/logs/precheck.log
-          docker run -v "${{ env.PRECHECK_ROOT }}/precheck":"${{ env.PRECHECK_ROOT }}/precheck" -v "${{ env.DESIGN_PATH }}/${{ matrix.designs }}/${{ matrix.designs }}":"${{ env.DESIGN_PATH }}/${{ matrix.designs }}/${{ matrix.designs }}" -v "${{ env.PDK_ROOT }}":"${{ env.PDK_ROOT }}" -e INPUT_DIRECTORY="${{ env.DESIGN_PATH }}/${{ matrix.designs }}/${{ matrix.designs }}" -e PDK_ROOT="${{ env.PDK_ROOT }}" -e PDKPATH="${{ env.PDK_ROOT }}/${{ env.PDK }}" -u $(id -u "$USER"):$(id -g "$USER") efabless/mpw_precheck:latest bash -c "cd ${{ env.PRECHECK_ROOT }}/precheck; python3 mpw_precheck.py --input_directory ${{ env.DESIGN_PATH }}/${{ matrix.designs }}/${{ matrix.designs }} --pdk_path ${{ env.PDK_ROOT }}/${{ env.PDK }} --output_directory $OUTPUT_DIRECTORY license makefile consistency xor magic_drc klayout_beol klayout_feol klayout_met_min_ca_density klayout_offgrid klayout_pin_label_purposes_overlapping_drawing klayout_zeroarea lvs"
+          docker run -v "${{ env.PRECHECK_ROOT }}/precheck":"${{ env.PRECHECK_ROOT }}/precheck" -v "${{ env.DESIGN_PATH }}":"${{ env.DESIGN_PATH }}" -v "${{ env.PDK_ROOT }}":"${{ env.PDK_ROOT }}" -e INPUT_DIRECTORY="${{ env.DESIGN_PATH }}" -e PDK_ROOT="${{ env.PDK_ROOT }}" -e PDKPATH="${{ env.PDK_ROOT }}/${{ env.PDK }}" -u $(id -u "$USER"):$(id -g "$USER") efabless/mpw_precheck:latest bash -c "cd ${{ env.PRECHECK_ROOT }}; python3 mpw_precheck.py --input_directory ${{ env.DESIGN_PATH }} --pdk_path ${{ env.PDK_ROOT }}/${{ env.PDK }} --output_directory $OUTPUT_DIRECTORY license makefile consistency xor magic_drc klayout_beol klayout_feol klayout_met_min_ca_density klayout_offgrid klayout_pin_label_purposes_overlapping_drawing klayout_zeroarea lvs"
           cnt=$(grep -c "All Checks Passed" "$OUTPUT")
           if ! [[ $cnt ]]; then cnt=0; fi
           if [[ $cnt -eq 1 ]]; then exit 0; fi
@@ -300,7 +299,7 @@ jobs:
         with:
           name: error
           path: |
-            /home/runner/work/${{ env.DESIGN_PATH }}/${{ matrix.design }}/${{ matrix.design }}/mpw_precheck_result/logs/*
+            /home/runner/work/${{ env.DESIGN_PATH }}/mpw_precheck_result/logs/*
   
   run_sta:
     runs-on: ubuntu-latest
@@ -391,11 +390,11 @@ jobs:
 
       - name: run sta
         run: |
-          export CUP_ROOT=${{ env.DESIGN_PATH }}/${{ matrix.designs }}/${{ matrix.designs }}
-          export PROJECT_ROOT=${{ env.DESIGN_PATH }}/${{ matrix.designs }}/${{ matrix.designs }}
-          export CARAVEL_ROOT=/home/runner/work/dependencies/caravel/caravel
-          export MCW_ROOT=/home/runner/work/dependencies/mgmt_core_wrapper/mgmt_core_wrapper
-          export TIMING_ROOT=/home/runner/work/dependencies/timing_scripts/timing_scripts
+          export CUP_ROOT=${{ env.DESIGN_PATH }}
+          export PROJECT_ROOT=${{ env.DESIGN_PATH }}
+          export CARAVEL_ROOT=/home/runner/work/dependencies/caravel
+          export MCW_ROOT=/home/runner/work/dependencies/mgmt_core_wrapper
+          export TIMING_ROOT=/home/runner/work/dependencies/timing_scripts
           cd $CUP_ROOT
           make extract-parasitics
           make create-spef-mapping
