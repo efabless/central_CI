@@ -137,9 +137,6 @@ jobs:
 
       - name: Export Environment Variables
         run: |
-          echo "CARAVEL_ROOT=/home/runner/work/dependencies/caravel" >> $GITHUB_ENV
-          echo "MCW_ROOT=/home/runner/work/dependencies/caravel_mgmt_soc_litex" >> $GITHUB_ENV
-          echo "PRECHECK_ROOT=/home/runner/work/dependencies/mpw_precheck" >> $GITHUB_ENV
           echo "PDK_ROOT=/home/runner/work/dependencies/pdk/pdk" >> $GITHUB_ENV
           echo "OPENLANE_ROOT=/home/runner/work/dependencies/OpenLane" >> $GITHUB_ENV
           echo "PDK=${{ matrix.pdk }}" >> $GITHUB_ENV
@@ -196,7 +193,7 @@ jobs:
 
       - name: harden
         run: |
-          ls ${{ env.PDK_ROOT }}
+          echo "OPENLANE_ROOT=/home/runner/work/dependencies/OpenLane/OpenLane" >> $GITHUB_ENV
           cd ${{ env.DESIGN_PATH }}/${{ matrix.designs }}/${{ matrix.designs }}
           python3 $GITHUB_WORKSPACE/.github/scripts/get_designs.py --design ${{ env.DESIGN_PATH }}/${{ matrix.designs }}/${{ matrix.designs }}
           for word in $(cat harden_sequence.txt); do
@@ -209,7 +206,7 @@ jobs:
         with:
           name: error
           path: |
-            /home/runner/work/${{ env.DESIGN_PATH }}/openlane/*/runs
+            /home/runner/work/${{ env.DESIGN_PATH }}/${{ matrix.designs }}/${{ matrix.designs }}/openlane/*/runs
 
       - name: cleanup
         run: |
