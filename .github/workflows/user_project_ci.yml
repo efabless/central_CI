@@ -214,6 +214,7 @@ jobs:
 
       - name: Tarball Designs
         run: |
+          rm -rf /tmp/${{ matrix.designs }}.tar
           tar -cf /tmp/${{ matrix.designs }}.tar -C $DESIGN_PATH .
 
       - name: Upload ${{ matrix.designs }} Tarball
@@ -229,7 +230,7 @@ jobs:
       matrix:
         pdk: ["sky130A", "sky130B"]
         designs: ["caravel_user_project"]
-    needs: [setup_env, download_designs]
+    needs: [harden_designs]
     steps:
       - uses: actions/checkout@v3
 
@@ -306,9 +307,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        pdk: ["sky130A", "sky130B"]
+        pdk: ["sky130A"]
         designs: ["caravel_user_project"]
-    needs: [download_caravel, download_mcw]
+    needs: [harden_designs, download_caravel, download_mcw]
     steps:
       - uses: actions/checkout@v3
 
