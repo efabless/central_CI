@@ -29,11 +29,12 @@ jobs:
         run: |
           tar -cf /tmp/${{ matrix.dependencies }}.tar -C $DEPENDENCIES_PATH/${{ matrix.dependencies }} .
 
-      - name: Upload ${{ matrix.dependencies }} Tarball
-        uses: actions/upload-artifact@v3
+      - name: Cache tarball artifact
+        uses: actions/cache@v2
         with:
-          name: ${{ matrix.dependencies }}-tarball
           path: /tmp/${{ matrix.dependencies }}.tar
+          key: ${{ matrix.dependencies }}-tarball
+          restore-keys: ${{ matrix.dependencies }}-tarball
   
   download_designs:
     runs-on: ubuntu-latest
@@ -56,11 +57,12 @@ jobs:
         run: |
           tar -cf /tmp/${{ matrix.designs }}.tar -C $DESIGN_PATH/${{ matrix.designs }} .
 
-      - name: Upload ${{ matrix.designs }} Tarball
-        uses: actions/upload-artifact@v3
+      - name: Cache tarball artifact
+        uses: actions/cache@v2
         with:
-          name: ${{ matrix.designs }}-tarball
           path: /tmp/${{ matrix.designs }}.tar
+          key: ${{ matrix.designs }}-tarball
+          restore-keys: ${{ matrix.designs }}-tarball
   
   download_caravel:
     runs-on: ubuntu-latest
@@ -84,11 +86,12 @@ jobs:
         run: |
           tar -cf /tmp/${{ matrix.dependencies }}.tar -C $DEPENDENCIES_PATH/${{ matrix.dependencies }} .
 
-      - name: Upload ${{ matrix.dependencies }} Tarball
-        uses: actions/upload-artifact@v3
+      - name: Cache tarball artifact
+        uses: actions/cache@v2
         with:
-          name: ${{ matrix.dependencies }}-tarball
           path: /tmp/${{ matrix.dependencies }}.tar
+          key: ${{ matrix.dependencies }}-tarball
+          restore-keys: ${{ matrix.dependencies }}-tarball
   
   download_mcw:
     runs-on: ubuntu-latest
@@ -112,11 +115,12 @@ jobs:
         run: |
           tar -cf /tmp/${{ matrix.dependencies }}.tar -C $DEPENDENCIES_PATH/${{ matrix.dependencies }} .
 
-      - name: Upload ${{ matrix.dependencies }} Tarball
-        uses: actions/upload-artifact@v3
+      - name: Cache tarball artifact
+        uses: actions/cache@v2
         with:
-          name: ${{ matrix.dependencies }}-tarball
           path: /tmp/${{ matrix.dependencies }}.tar
+          key: ${{ matrix.dependencies }}-tarball
+          restore-keys: ${{ matrix.dependencies }}-tarball
   
   harden_designs:
     runs-on: ubuntu-latest
