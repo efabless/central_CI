@@ -30,7 +30,7 @@ jobs:
           tar -cf /tmp/${{ matrix.dependencies }}.tar -C $DEPENDENCIES_PATH/${{ matrix.dependencies }} .
 
       - name: Cache tarball artifact
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: /tmp/${{ matrix.dependencies }}.tar
           key: ${{ matrix.dependencies }}-tarball
@@ -58,7 +58,7 @@ jobs:
           tar -cf /tmp/${{ matrix.designs }}.tar -C $DESIGN_PATH/${{ matrix.designs }} .
 
       - name: Cache tarball artifact
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: /tmp/${{ matrix.designs }}.tar
           key: ${{ matrix.designs }}-tarball
@@ -87,7 +87,7 @@ jobs:
           tar -cf /tmp/${{ matrix.dependencies }}.tar -C $DEPENDENCIES_PATH/${{ matrix.dependencies }} .
 
       - name: Cache tarball artifact
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: /tmp/${{ matrix.dependencies }}.tar
           key: ${{ matrix.dependencies }}-tarball
@@ -116,7 +116,7 @@ jobs:
           tar -cf /tmp/${{ matrix.dependencies }}.tar -C $DEPENDENCIES_PATH/${{ matrix.dependencies }} .
 
       - name: Cache tarball artifact
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: /tmp/${{ matrix.dependencies }}.tar
           key: ${{ matrix.dependencies }}-tarball
@@ -150,8 +150,7 @@ jobs:
       - name: Download OpenLane Tarball
         uses: actions/download-artifact@v3
         with:
-          name: OpenLane-tarball
-          path: /tmp
+          name: OpenLane-tarball.tar
 
       - name: Unpack OpenLane Tarball
         run: |
@@ -162,8 +161,7 @@ jobs:
       - name: Download pdk Tarball
         uses: actions/download-artifact@v3
         with:
-          name: pdk-tarball
-          path: /tmp
+          name: pdk-tarball.tar
 
       - name: Unpack pdk Tarball
         run: |
@@ -174,8 +172,7 @@ jobs:
       - name: Download ${{ matrix.designs }} Tarball
         uses: actions/download-artifact@v3
         with:
-          name: ${{ matrix.designs }}-tarball
-          path: /tmp
+          name: ${{ matrix.designs }}-tarball.tar
 
       - name: Unpack ${{ matrix.designs }} Tarball
         run: |
