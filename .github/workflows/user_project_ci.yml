@@ -403,6 +403,10 @@ jobs:
           make create-spef-mapping
           make caravel-sta
           tar -cf /tmp/timing.tar $CUP_ROOT/signoff/caravel/openlane-signoff/timing
+          find $CUP_ROOT/signoff/caravel/openlane-signoff/timing/*/ -name "summary.log" | head -n1 \
+            | xargs head -n5 | tail -n1 > $CUP_ROOT/signoff/caravel/openlane-signoff/timing/all-summary.rpt
+          find $CUP_ROOT/signoff/caravel/openlane-signoff/timing/*/ -name "summary.log" \
+            | xargs -I {} bash -c "head -n7 {} | tail -n1" >> $CUP_ROOT/signoff/caravel/openlane-signoff/timing/all-summary.rpt
           vio=$(grep -c "vio(" $CUP_ROOT/signoff/caravel/openlane-signoff/timing/all-summary.rpt || true)
           if [[ $vio -gt 0 ]];
           then 
