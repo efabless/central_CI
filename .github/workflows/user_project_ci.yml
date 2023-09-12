@@ -208,7 +208,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v3
         with:
-          name: error
+          name: openlane-issue-reproducible
           path: |
             ${{ env.DESIGN_PATH }}/issue_reproducible.tar
 
