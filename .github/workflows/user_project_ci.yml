@@ -418,6 +418,7 @@ jobs:
           fi
 
       - name: upload sta reports
+        if: failure()
         uses: actions/upload-artifact@v3
         with:
           name: sta-reports
