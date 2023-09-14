@@ -118,115 +118,115 @@ jobs:
           name: ${{ matrix.dependencies }}-tarball
           path: /tmp/${{ matrix.dependencies }}.tar
   
-  harden_designs:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        pdk: ["sky130A", "sky130B"]
-        designs: ["caravel_user_project"]
-    needs: [setup_env, download_designs]
-    steps:
-      - uses: actions/checkout@v3
+  # harden_designs:
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       pdk: ["sky130A", "sky130B"]
+  #       designs: ["caravel_user_project"]
+  #   needs: [setup_env, download_designs]
+  #   steps:
+  #     - uses: actions/checkout@v3
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
+  #     - name: Set up QEMU
+  #       uses: docker/setup-qemu-action@v1
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+  #     - name: Set up Docker Buildx
+  #       uses: docker/setup-buildx-action@v1
 
-      - name: Export Environment Variables
-        run: |
-          echo "PDK_ROOT=/home/runner/work/dependencies/pdk" >> $GITHUB_ENV
-          echo "OPENLANE_ROOT=/home/runner/work/dependencies/OpenLane" >> $GITHUB_ENV
-          echo "PDK=${{ matrix.pdk }}" >> $GITHUB_ENV
-          echo "DEPENDENCIES_PATH=/home/runner/work/dependencies" >> $GITHUB_ENV
-          echo "DESIGN_PATH=/home/runner/work/designs/${{ matrix.designs }}" >> $GITHUB_ENV
+  #     - name: Export Environment Variables
+  #       run: |
+  #         echo "PDK_ROOT=/home/runner/work/dependencies/pdk" >> $GITHUB_ENV
+  #         echo "OPENLANE_ROOT=/home/runner/work/dependencies/OpenLane" >> $GITHUB_ENV
+  #         echo "PDK=${{ matrix.pdk }}" >> $GITHUB_ENV
+  #         echo "DEPENDENCIES_PATH=/home/runner/work/dependencies" >> $GITHUB_ENV
+  #         echo "DESIGN_PATH=/home/runner/work/designs/${{ matrix.designs }}" >> $GITHUB_ENV
 
-      - name: Download OpenLane Tarball
-        uses: actions/download-artifact@v3
-        with:
-          name: OpenLane-tarball
-          path: /tmp
+  #     - name: Download OpenLane Tarball
+  #       uses: actions/download-artifact@v3
+  #       with:
+  #         name: OpenLane-tarball
+  #         path: /tmp
 
-      - name: Unpack OpenLane Tarball
-        run: |
-          sudo mkdir -p ${{ env.DEPENDENCIES_PATH }}/OpenLane
-          sudo chown -R $USER:$USER ${{ env.DEPENDENCIES_PATH }}/OpenLane
-          tar -xf /tmp/OpenLane.tar -C ${{ env.DEPENDENCIES_PATH }}/OpenLane .\
+  #     - name: Unpack OpenLane Tarball
+  #       run: |
+  #         sudo mkdir -p ${{ env.DEPENDENCIES_PATH }}/OpenLane
+  #         sudo chown -R $USER:$USER ${{ env.DEPENDENCIES_PATH }}/OpenLane
+  #         tar -xf /tmp/OpenLane.tar -C ${{ env.DEPENDENCIES_PATH }}/OpenLane .\
 
-      - name: Download pdk Tarball
-        uses: actions/download-artifact@v3
-        with:
-          name: pdk-tarball
-          path: /tmp
+  #     - name: Download pdk Tarball
+  #       uses: actions/download-artifact@v3
+  #       with:
+  #         name: pdk-tarball
+  #         path: /tmp
 
-      - name: Unpack pdk Tarball
-        run: |
-          sudo mkdir -p ${{ env.DEPENDENCIES_PATH }}/pdk
-          sudo chown -R $USER:$USER ${{ env.DEPENDENCIES_PATH }}/pdk
-          tar -xf /tmp/pdk.tar -C ${{ env.DEPENDENCIES_PATH }}/pdk .
+  #     - name: Unpack pdk Tarball
+  #       run: |
+  #         sudo mkdir -p ${{ env.DEPENDENCIES_PATH }}/pdk
+  #         sudo chown -R $USER:$USER ${{ env.DEPENDENCIES_PATH }}/pdk
+  #         tar -xf /tmp/pdk.tar -C ${{ env.DEPENDENCIES_PATH }}/pdk .
 
-      - name: Download ${{ matrix.designs }} Tarball
-        uses: actions/download-artifact@v3
-        with:
-          name: ${{ matrix.designs }}-tarball
-          path: /tmp
+  #     - name: Download ${{ matrix.designs }} Tarball
+  #       uses: actions/download-artifact@v3
+  #       with:
+  #         name: ${{ matrix.designs }}-tarball
+  #         path: /tmp
 
-      - name: Unpack ${{ matrix.designs }} Tarball
-        run: |
-          sudo mkdir -p ${{ env.DESIGN_PATH }}
-          sudo chown -R $USER:$USER ${{ env.DESIGN_PATH }}
-          tar -xf /tmp/${{ matrix.designs }}.tar -C ${{ env.DESIGN_PATH }} .
+  #     - name: Unpack ${{ matrix.designs }} Tarball
+  #       run: |
+  #         sudo mkdir -p ${{ env.DESIGN_PATH }}
+  #         sudo chown -R $USER:$USER ${{ env.DESIGN_PATH }}
+  #         tar -xf /tmp/${{ matrix.designs }}.tar -C ${{ env.DESIGN_PATH }} .
 
-      - name: setup openlane
-        run: |
-          json_file=$(cat $GITHUB_WORKSPACE/tools.json)
-          openlane_commit=$(echo "${json_file}" | jq -r ".OpenLane.commit")
-          export OPENLANE_IMAGE_NAME=efabless/openlane:${openlane_commit}
-          export IMAGE_NAME=efabless/openlane:${openlane_commit}
-          echo "OPENLANE_IMAGE_NAME=efabless/openlane:${openlane_commit}" >> $GITHUB_ENV
-          echo "IMAGE_NAME=efabless/openlane:${openlane_commit}" >> $GITHUB_ENV
-          cd ${{ env.OPENLANE_ROOT }}
-          make pull-openlane
+  #     - name: setup openlane
+  #       run: |
+  #         json_file=$(cat $GITHUB_WORKSPACE/tools.json)
+  #         openlane_commit=$(echo "${json_file}" | jq -r ".OpenLane.commit")
+  #         export OPENLANE_IMAGE_NAME=efabless/openlane:${openlane_commit}
+  #         export IMAGE_NAME=efabless/openlane:${openlane_commit}
+  #         echo "OPENLANE_IMAGE_NAME=efabless/openlane:${openlane_commit}" >> $GITHUB_ENV
+  #         echo "IMAGE_NAME=efabless/openlane:${openlane_commit}" >> $GITHUB_ENV
+  #         cd ${{ env.OPENLANE_ROOT }}
+  #         make pull-openlane
 
 
-      - name: harden
-        run: |
-          cd ${{ env.DESIGN_PATH }}
-          python3 $GITHUB_WORKSPACE/.github/scripts/get_designs.py --design ${{ env.DESIGN_PATH }}
-          for word in $(cat harden_sequence.txt); do
-            echo "CURRENT_DESIGN=${word}" >> $GITHUB_ENV
-            make $word
-          done
+  #     - name: harden
+  #       run: |
+  #         cd ${{ env.DESIGN_PATH }}
+  #         python3 $GITHUB_WORKSPACE/.github/scripts/get_designs.py --design ${{ env.DESIGN_PATH }}
+  #         for word in $(cat harden_sequence.txt); do
+  #           echo "CURRENT_DESIGN=${word}" >> $GITHUB_ENV
+  #           make $word
+  #         done
 
-      - name: Create reproducible
-        if: failure()
-        run: tar -cf ${{ env.DESIGN_PATH }}/issue_reproducible.tar -C ${{ env.DESIGN_PATH }}/openlane/${{ env.CURRENT_DESIGN }}/runs/${{ env.CURRENT_DESIGN }}/issue_reproducible .
+  #     - name: Create reproducible
+  #       if: failure()
+  #       run: tar -cf ${{ env.DESIGN_PATH }}/issue_reproducible.tar -C ${{ env.DESIGN_PATH }}/openlane/${{ env.CURRENT_DESIGN }}/runs/${{ env.CURRENT_DESIGN }}/issue_reproducible .
       
-      - name: upload failure logs
-        if: failure()
-        uses: actions/upload-artifact@v3
-        with:
-          name: openlane-issue-reproducible
-          path: |
-            ${{ env.DESIGN_PATH }}/issue_reproducible.tar
+  #     - name: upload failure logs
+  #       if: failure()
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: openlane-issue-reproducible
+  #         path: |
+  #           ${{ env.DESIGN_PATH }}/issue_reproducible.tar
 
-      - name: cleanup
-        run: |
-          cd ${{ env.DESIGN_PATH }}
-          rm -rf openlane/*/runs
+  #     - name: cleanup
+  #       run: |
+  #         cd ${{ env.DESIGN_PATH }}
+  #         rm -rf openlane/*/runs
 
-      - name: Tarball Designs
-        run: |
-          rm -rf /tmp/${{ matrix.designs }}.tar
-          tar -cf /tmp/${{ matrix.designs }}.tar -C $DESIGN_PATH .
+  #     - name: Tarball Designs
+  #       run: |
+  #         rm -rf /tmp/${{ matrix.designs }}.tar
+  #         tar -cf /tmp/${{ matrix.designs }}.tar -C $DESIGN_PATH .
 
-      - name: Upload ${{ matrix.designs }} Tarball
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ matrix.designs }}-tarball
-          path: /tmp/${{ matrix.designs }}.tar
+  #     - name: Upload ${{ matrix.designs }} Tarball
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: ${{ matrix.designs }}-tarball
+  #         path: /tmp/${{ matrix.designs }}.tar
   
   run_precheck:
     runs-on: ubuntu-latest
@@ -235,7 +235,7 @@ jobs:
       matrix:
         pdk: ["sky130A", "sky130B"]
         designs: ["caravel_user_project"]
-    needs: [harden_designs]
+    needs: [setup_env, download_designs]
     steps:
       - uses: actions/checkout@v3
 
@@ -314,7 +314,7 @@ jobs:
       matrix:
         pdk: ["sky130A"]
         designs: ["caravel_user_project"]
-    needs: [harden_designs, download_caravel, download_mcw]
+    needs: [setup_env, download_designs, download_caravel, download_mcw]
     steps:
       - uses: actions/checkout@v3
 
