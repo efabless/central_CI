@@ -1,19 +1,19 @@
 {
     "OpenLane": {
         "url": "https://github.com/The-OpenROAD-Project/OpenLane",
-        "commit": "b1fb228e3196c3922b376e91675878523bb5ed58"
+        "commit": "d054702b2cce04761cc2bc598f6b95c9d8ca7c6c"
     },
     "pdk": {
         "url": "https://github.com/efabless/volare",
-        "commit": "933e5f2b8e42c5ec25b83c6d242455ada6f3e926"
+        "commit": "78b7bc32ddb4b6f14f76883c2e2dc5b5de9d1cbc"
     },
     "precheck": {
         "url": "https://github.com/efabless/mpw_precheck",
-        "commit": "7222e4529d582397934a3e4c722f26cee1db1cff"
+        "commit": "0f3e1c1b5a1f1832de55f67c9ed37231784b987a"
     },
     "caravel": {
         "url": "https://github.com/efabless/caravel-lite",
-        "commit": "8b2458ad68115f21312d1e4126c795efbc8edb07"
+        "commit": "c2c949119223be6593b07d6a34bc969d3d75a964"
     },
     "mgmt_core_wrapper": {
         "url": "https://github.com/efabless/caravel_mgmt_soc_litex",
