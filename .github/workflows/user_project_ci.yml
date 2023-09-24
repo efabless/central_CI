@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        designs: ["caravel_user_project", "caravel_LDO1V8E"]
+        designs: ["caravel_user_project"]
     steps:
       - uses: actions/checkout@v3
 
@@ -233,7 +233,7 @@ jobs:
       fail-fast: false
       matrix:
         pdk: ["sky130A", "sky130B"]
-        designs: ["caravel_user_project", "caravel_LDO1V8E"]
+        designs: ["caravel_user_project"]
     needs: [harden_designs]
     steps:
       - uses: actions/checkout@v3
