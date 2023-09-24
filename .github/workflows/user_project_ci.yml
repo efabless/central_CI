@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        designs: ["caravel_user_project"]
+        designs: ["caravel_user_project", "caravel_LDO1V8E"]
     steps:
       - uses: actions/checkout@v3
 
@@ -219,8 +219,7 @@ jobs:
 
       - name: Tarball Designs
         run: |
-          rm -rf /tmp/${{ matrix.designs }}.tar
-          tar -cf /tmp/${{ matrix.designs }}.tar -C $DESIGN_PATH .
+          tar -cf /tmp/${{ matrix.designs }}_${{ matrix.pdk }}.tar -C $DESIGN_PATH .
 
       - name: Upload ${{ matrix.designs }} Tarball
         uses: actions/upload-artifact@v3
@@ -234,7 +233,7 @@ jobs:
       fail-fast: false
       matrix:
         pdk: ["sky130A", "sky130B"]
-        designs: ["caravel_user_project"]
+        designs: ["caravel_user_project", "caravel_LDO1V8E"]
     needs: [harden_designs]
     steps:
       - uses: actions/checkout@v3
@@ -265,10 +264,10 @@ jobs:
           sudo chown -R $USER:$USER ${{ env.DEPENDENCIES_PATH }}/pdk
           tar -xf /tmp/pdk.tar -C ${{ env.DEPENDENCIES_PATH }}/pdk .
 
-      - name: Download ${{ matrix.designs }} Tarball
+      - name: Download ${{ matrix.designs }}_${{ matrix.pdk }} Tarball
         uses: actions/download-artifact@v3
         with:
-          name: ${{ matrix.designs }}-tarball
+          name: ${{ matrix.designs }}_${{ matrix.pdk }}-tarball
           path: /tmp
 
       - name: Unpack ${{ matrix.designs }} Tarball
@@ -382,10 +381,10 @@ jobs:
           sudo chown -R $USER:$USER ${{ env.TIMING_ROOT }}
           tar -xf /tmp/timing_scripts.tar -C ${{ env.TIMING_ROOT }} .
 
-      - name: Download ${{ matrix.designs }} Tarball
+      - name: Download ${{ matrix.designs }}_${{ matrix.pdk }} Tarball
         uses: actions/download-artifact@v3
         with:
-          name: ${{ matrix.designs }}-tarball
+          name: ${{ matrix.designs }}_${{ matrix.pdk }}-tarball
           path: /tmp
 
       - name: Unpack ${{ matrix.designs }} Tarball
