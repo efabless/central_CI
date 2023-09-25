@@ -270,11 +270,11 @@ jobs:
           name: ${{ matrix.designs }}_${{ matrix.pdk }}-tarball
           path: /tmp
 
-      - name: Unpack ${{ matrix.designs }} Tarball
+      - name: Unpack ${{ matrix.designs }}_${{ matrix.pdk }} Tarball
         run: |
           sudo mkdir -p ${{ env.DESIGN_PATH }}
           sudo chown -R $USER:$USER ${{ env.DESIGN_PATH }}
-          tar -xf /tmp/${{ matrix.designs }}.tar -C ${{ env.DESIGN_PATH }} .
+          tar -xf /tmp/${{ matrix.designs }}_${{ matrix.pdk }}.tar -C ${{ env.DESIGN_PATH }} .
 
       - name: Download precheck Tarball
         uses: actions/download-artifact@v3
@@ -387,11 +387,11 @@ jobs:
           name: ${{ matrix.designs }}_${{ matrix.pdk }}-tarball
           path: /tmp
 
-      - name: Unpack ${{ matrix.designs }} Tarball
+      - name: Unpack ${{ matrix.designs }}_${{ matrix.pdk }} Tarball
         run: |
           sudo mkdir -p ${{ env.DESIGN_PATH }}
           sudo chown -R $USER:$USER ${{ env.DESIGN_PATH }}
-          tar -xf /tmp/${{ matrix.designs }}.tar -C ${{ env.DESIGN_PATH }} .
+          tar -xf /tmp/${{ matrix.designs }}_${{ matrix.pdk }}.tar -C ${{ env.DESIGN_PATH }} .
 
       - name: run sta
         run: |
