@@ -23,7 +23,7 @@ jobs:
         run: |
           mkdir -p ${{ env.DEPENDENCIES_PATH }}
           python3 -m pip install --upgrade --no-cache-dir volare
-          echo "GITHUB_TOKEN=${{ secrets.MY_TOKEN }}" >> $GITHUB_ENV
+          export GITHUB_TOKEN=${{ secrets.MY_TOKEN }}
           python3 -m pip install git+https://github.com/efabless/IPM
           python3 $GITHUB_WORKSPACE/.github/scripts/install_dep.py --json $GITHUB_WORKSPACE/tools.json --output ${{ env.DEPENDENCIES_PATH }} --dependency ${{ matrix.dependencies }}
 
@@ -52,7 +52,7 @@ jobs:
         run: |
           mkdir -p ${{ env.DESIGN_PATH }}
           python3 -m pip install --upgrade --no-cache-dir volare
-          echo "GITHUB_TOKEN=${{ secrets.MY_TOKEN }}" >> $GITHUB_ENV
+          export GITHUB_TOKEN=${{ secrets.MY_TOKEN }}
           python3 -m pip install git+https://github.com/efabless/IPM
           python3 $GITHUB_WORKSPACE/.github/scripts/install_dep.py --json $GITHUB_WORKSPACE/.github/scripts/designs.json --output ${{ env.DESIGN_PATH }} --dependency ${{ matrix.designs }}
 
@@ -82,7 +82,7 @@ jobs:
         run: |
           mkdir -p ${{ env.DEPENDENCIES_PATH }}
           python3 -m pip install --upgrade --no-cache-dir volare
-          echo "GITHUB_TOKEN=${{ secrets.MY_TOKEN }}" >> $GITHUB_ENV
+          export GITHUB_TOKEN=${{ secrets.MY_TOKEN }}
           python3 -m pip install git+https://github.com/efabless/IPM
           python3 $GITHUB_WORKSPACE/.github/scripts/install_dep.py --json $GITHUB_WORKSPACE/tools.json --output ${{ env.DEPENDENCIES_PATH }} --dependency ${{ matrix.dependencies }}
 
@@ -112,7 +112,7 @@ jobs:
         run: |
           mkdir -p ${{ env.DEPENDENCIES_PATH }}
           python3 -m pip install --upgrade --no-cache-dir volare
-          echo "GITHUB_TOKEN=${{ secrets.MY_TOKEN }}" >> $GITHUB_ENV
+          export GITHUB_TOKEN=${{ secrets.MY_TOKEN }}
           python3 -m pip install git+https://github.com/efabless/IPM
           python3 $GITHUB_WORKSPACE/.github/scripts/install_dep.py --json $GITHUB_WORKSPACE/tools.json --output ${{ env.DEPENDENCIES_PATH }} --dependency ${{ matrix.dependencies }}
 
