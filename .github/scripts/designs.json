@@ -2,5 +2,9 @@
     "caravel_user_project": {
         "url": "https://github.com/efabless/caravel_user_project",
         "commit": "06fda1226a92cc11a6d9f95b104370e4ec1b941d"
+    },
+    "caravel_aes_example": {
+        "url": "https://github.com/efabless/caravel_aes_example",
+        "commit": "31f7a6f602169dca24823f2fb19d9d880aeb9aa5"
     }
 }

@@ -4,6 +4,7 @@ import tarfile
 import requests
 import volare
 import argparse
+import ipm
 
 
 def get_tool_data(json_file):
@@ -32,6 +33,8 @@ def install_tool(tool, version, url, tool_path):
         tar.close()
         os.rename(f'{tool_path}/{owner}-{name}-{version[0:7]}', f'{tool_path}/{tool}')
         os.remove(f'{tool_path}/{version}.tar.gz')
+        if os.path.exists(f"{tool_path}/{tool}/ip/dependencies.json"):
+            ipm.install_deps(f"{tool_path}/{tool}/ip", os.path.join(os.path.expanduser("~"), ".ipm"))
 
 
 def main():

@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        designs: ["caravel_user_project"]
+        designs: ["caravel_user_project", "caravel_aes_example"]
     steps:
       - uses: actions/checkout@v3
 
@@ -50,6 +50,7 @@ jobs:
         run: |
           mkdir -p ${{ env.DESIGN_PATH }}
           python3 -m pip install --upgrade --no-cache-dir volare
+          python3 -m pip install git+https://github.com/efabless/IPM
           python3 $GITHUB_WORKSPACE/.github/scripts/install_dep.py --json $GITHUB_WORKSPACE/.github/scripts/designs.json --output ${{ env.DESIGN_PATH }} --dependency ${{ matrix.designs }}
 
       - name: Tarball Designs
