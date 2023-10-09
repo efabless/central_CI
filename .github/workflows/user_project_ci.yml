@@ -132,7 +132,7 @@ jobs:
       fail-fast: false
       matrix:
         pdk: ["sky130A", "sky130B"]
-        designs: ["caravel_user_project"]
+        designs: ["caravel_user_project", "caravel_aes_example"]
     needs: [setup_env, download_designs]
     steps:
       - uses: actions/checkout@v3
@@ -241,7 +241,7 @@ jobs:
       fail-fast: false
       matrix:
         pdk: ["sky130A", "sky130B"]
-        designs: ["caravel_user_project"]
+        designs: ["caravel_user_project", "caravel_aes_example"]
     needs: [harden_designs]
     steps:
       - uses: actions/checkout@v3
@@ -320,7 +320,7 @@ jobs:
       fail-fast: false
       matrix:
         pdk: ["sky130A"]
-        designs: ["caravel_user_project"]
+        designs: ["caravel_user_project", "caravel_aes_example"]
     needs: [harden_designs, download_caravel, download_mcw]
     steps:
       - uses: actions/checkout@v3
