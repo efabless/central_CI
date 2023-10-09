@@ -34,7 +34,8 @@ def install_tool(tool, version, url, tool_path):
         os.rename(f'{tool_path}/{owner}-{name}-{version[0:7]}', f'{tool_path}/{tool}')
         os.remove(f'{tool_path}/{version}.tar.gz')
         if os.path.exists(f"{tool_path}/{tool}/ip/dependencies.json"):
-            ipm.install_deps(f"{tool_path}/{tool}/ip", f"{tool_path}/{tool}/ip")
+            os.makedirs(f"{tool_path}/{tool}/.ipm")
+            ipm.install_deps(f"{tool_path}/{tool}/ip", f"{tool_path}/{tool}/.ipm")
 
 
 def main():
