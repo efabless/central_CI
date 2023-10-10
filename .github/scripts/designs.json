@@ -5,6 +5,6 @@
     },
     "caravel_aes_example": {
         "url": "https://github.com/efabless/caravel_aes_example",
-        "commit": "31f7a6f602169dca24823f2fb19d9d880aeb9aa5"
+        "commit": "c3dd3468e595525f13394e114989d9119e4f951b"
     }
 }
