@@ -202,6 +202,7 @@ jobs:
       - name: harden
         run: |
           cd ${{ env.DESIGN_PATH }}
+          rm -rf gds mag def lef
           python3 $GITHUB_WORKSPACE/.github/scripts/get_designs.py --design ${{ env.DESIGN_PATH }}
           for word in $(cat harden_sequence.txt); do
             echo "CURRENT_DESIGN=${word}" >> $GITHUB_ENV
