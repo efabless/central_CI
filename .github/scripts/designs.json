@@ -2,5 +2,9 @@
     "caravel_user_project": {
         "url": "https://github.com/efabless/caravel_user_project",
         "commit": "06fda1226a92cc11a6d9f95b104370e4ec1b941d"
+    },
+    "openframe_timer_example": {
+        "url": "https://github.com/efabless/openframe_timer_example",
+        "commit": "12698dac80bb71d54369721299860bb84a5e8e16"
     }
 }

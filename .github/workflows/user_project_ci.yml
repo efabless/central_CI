@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        designs: ["caravel_user_project"]
+        designs: ["caravel_user_project", "openframe_timer_example"]
     steps:
       - uses: actions/checkout@v3
 
@@ -124,7 +124,7 @@ jobs:
       fail-fast: false
       matrix:
         pdk: ["sky130A", "sky130B"]
-        designs: ["caravel_user_project"]
+        designs: ["caravel_user_project", "openframe_timer_example"]
     needs: [setup_env, download_designs]
     steps:
       - uses: actions/checkout@v3
@@ -233,7 +233,7 @@ jobs:
       fail-fast: false
       matrix:
         pdk: ["sky130A", "sky130B"]
-        designs: ["caravel_user_project"]
+        designs: ["caravel_user_project", "openframe_timer_example"]
     needs: [harden_designs]
     steps:
       - uses: actions/checkout@v3
