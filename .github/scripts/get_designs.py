@@ -7,7 +7,7 @@ def parse_lvs_config(file_path):
     """Parses the LVS config file at the specified path."""
     with open(file_path) as f:
         data = json.load(f)
-    return data['LVS_VERILOG_FILES']
+    return data
 
 
 def main():
@@ -20,11 +20,12 @@ def main():
         config_file = f"{args.design}/lvs/openframe_project_wrapper/lvs_config.json"
     data = parse_lvs_config(config_file)
     f = open("harden_sequence.txt", "w")
-    for d in data:
+    for d in data['LVS_VERILOG_FILES']:
         macro_name = d.split('/')[-1].split('.v')[0]
         if macro_name.startswith('$'):
-            macro_name = 'user_project_wrapper'
-        f.write(f"{macro_name} ")
+            macro_name = data[f'{macro_name.split("$")[1]}']
+        if os.path.exists(f"{args.design}/openlane/{macro_name}/config.json"):
+            f.write(f"{macro_name} ")
     f.close()
 
 
