@@ -1,7 +1,7 @@
 {
     "OpenLane": {
         "url": "https://github.com/The-OpenROAD-Project/OpenLane",
-        "commit": "d054702b2cce04761cc2bc598f6b95c9d8ca7c6c"
+        "commit": "30ee1388932eb55a89ad84ee43997bfe3a386421"
     },
     "pdk": {
         "url": "https://github.com/efabless/volare",
@@ -9,18 +9,18 @@
     },
     "precheck": {
         "url": "https://github.com/efabless/mpw_precheck",
-        "commit": "ac8e28e1feb0822a5ba903f72927777d268a8ffe"
+        "commit": "0a9bbf2caf3a656ffff4724be6d49c6ab3012984"
     },
     "caravel": {
         "url": "https://github.com/efabless/caravel-lite",
-        "commit": "c2c949119223be6593b07d6a34bc969d3d75a964"
+        "commit": "05baf48756e051c9379dbed722990657b0c697ae"
     },
     "mgmt_core_wrapper": {
         "url": "https://github.com/efabless/caravel_mgmt_soc_litex",
-        "commit": "43d0ce33d331ee73d9dcebe197c6ce4da5909ecc"
+        "commit": "3222bd57445eb6e734f010b9bed369b53c6066fe"
     },
     "timing_scripts": {
         "url": "https://github.com/efabless/timing-scripts",
-        "commit": "168b53a8c92655a37924d6338149bf5a5ec8838c"
+        "commit": "5b5dab63a257849dbb31881bec6f45439b6bdecb"
     }
 }
