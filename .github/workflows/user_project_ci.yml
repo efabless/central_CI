@@ -307,10 +307,12 @@ jobs:
 
       - name: install cocotb
         run: |
+          cd ${{ env.DESIGN_PATH }}
           make setup-cocotb
       
       - name: run RTL verification
         run: |
+          cd ${{ env.DESIGN_PATH }}
           cd $GITHUB_WORKSPACE/verilog/dv/cocotb && $GITHUB_WORKSPACE/venv-cocotb/bin/caravel_cocotb -tl user_proj_tests/user_proj_tests.yaml -verbosity debug --CI -tag rtl_verification
           cnt=$(grep -c "failed" "$GITHUB_WORKSPACE/verilog/dv/cocotb/sim/rtl_verification/runs.log")
           if ! [[ $cnt ]]; then cnt=0; fi
