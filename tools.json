@@ -1,7 +1,7 @@
 {
     "OpenLane": {
         "url": "https://github.com/The-OpenROAD-Project/OpenLane",
-        "commit": "7ea7a2aeef4bea5445d133c26ca2b3e9f0d0c78f"
+        "commit": "30ee1388932eb55a89ad84ee43997bfe3a386421"
     },
     "pdk": {
         "url": "https://github.com/efabless/volare",
