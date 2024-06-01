@@ -1,11 +1,11 @@
 {
     "OpenLane": {
         "url": "https://github.com/The-OpenROAD-Project/OpenLane",
-        "commit": "9dbd8b5ea2bd891bed4dcc97df5c7439083f0368"
+        "commit": "bdc9412b3e468c102d01b7cf6337be06ec6e9c9a"
     },
     "pdk": {
         "url": "https://github.com/efabless/volare",
-        "commit": "cd1748bb197f9b7af62a54507de6624e30363943"
+        "commit": "6d4d11780c40b20ee63cc98e645307a9bf2b2ab8"
     },
     "precheck": {
         "url": "https://github.com/efabless/mpw_precheck",
