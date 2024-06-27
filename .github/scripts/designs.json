@@ -1,10 +1,10 @@
 {
     "caravel_user_project": {
         "url": "https://github.com/efabless/caravel_user_project",
-        "commit": "06fda1226a92cc11a6d9f95b104370e4ec1b941d"
+        "commit": "a01f3f0ece3c835d8788c87212006236e2167d7f"
     },
     "openframe_timer_example": {
         "url": "https://github.com/efabless/openframe_timer_example",
-        "commit": "eaa077ddcecdd5f00f7bc5636594b4bc4492df86"
+        "commit": "966648a4accf789646118c0bcd2e36fe516acb7d"
     }
 }
