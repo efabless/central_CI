@@ -12,8 +12,8 @@
         "commit": "f6b9c3d3f00694f96dce8444149449b4719180f0"
     },
     "caravel": {
-        "url": "https://github.com/efabless/caravel-lite",
-        "commit": "115b8d5e48a6d01f892012385b64c873f2d9205b"
+        "url": "https://github.com/efabless/caravel",
+        "commit": "2a5c603348589db0fdf1506c3d40c21e238de881"
     },
     "mgmt_core_wrapper": {
         "url": "https://github.com/efabless/caravel_mgmt_soc_litex",
