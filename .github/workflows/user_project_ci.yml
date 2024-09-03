@@ -144,7 +144,7 @@ jobs:
           echo "DESIGN_PATH=/home/runner/work/designs/${{ matrix.designs }}" >> $GITHUB_ENV
 
       - name: Download OpenLane Tarball
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: OpenLane-tarball
           path: /tmp
@@ -156,7 +156,7 @@ jobs:
           tar -xf /tmp/OpenLane.tar -C ${{ env.DEPENDENCIES_PATH }}/OpenLane .\
 
       - name: Download pdk Tarball
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: pdk-tarball
           path: /tmp
@@ -168,7 +168,7 @@ jobs:
           tar -xf /tmp/pdk.tar -C ${{ env.DEPENDENCIES_PATH }}/pdk .
 
       - name: Download ${{ matrix.designs }} Tarball
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: ${{ matrix.designs }}-tarball
           path: /tmp
@@ -253,7 +253,7 @@ jobs:
           echo "DESIGN_PATH=/home/runner/work/designs/${{ matrix.designs }}" >> $GITHUB_ENV
 
       - name: Download pdk Tarball
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: pdk-tarball
           path: /tmp
@@ -265,7 +265,7 @@ jobs:
           tar -xf /tmp/pdk.tar -C ${{ env.DEPENDENCIES_PATH }}/pdk .
 
       - name: Download ${{ matrix.designs }}_${{ matrix.pdk }} Tarball
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: ${{ matrix.designs }}_${{ matrix.pdk }}-tarball
           path: /tmp
@@ -277,7 +277,7 @@ jobs:
           tar -xf /tmp/${{ matrix.designs }}_${{ matrix.pdk }}.tar -C ${{ env.DESIGN_PATH }} .
 
       - name: Download precheck Tarball
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: precheck-tarball
           path: /tmp
@@ -334,7 +334,7 @@ jobs:
           echo "DESIGN_PATH=/home/runner/work/designs/${{ matrix.designs }}" >> $GITHUB_ENV
 
       - name: Download pdk Tarball
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: pdk-tarball
           path: /tmp
@@ -346,7 +346,7 @@ jobs:
           tar -xf /tmp/pdk.tar -C ${{ env.DEPENDENCIES_PATH }}/pdk .
 
       - name: Download caravel Tarball
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: caravel-tarball
           path: /tmp
@@ -358,7 +358,7 @@ jobs:
           tar -xf /tmp/caravel.tar -C ${{ env.CARAVEL_ROOT }} .
 
       - name: Download mgmt_core_wrapper Tarball
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: mgmt_core_wrapper-tarball
           path: /tmp
@@ -370,7 +370,7 @@ jobs:
           tar -xf /tmp/mgmt_core_wrapper.tar -C ${{ env.MCW_ROOT }} .
 
       - name: Download timing_scripts Tarball
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: timing_scripts-tarball
           path: /tmp
@@ -382,7 +382,7 @@ jobs:
           tar -xf /tmp/timing_scripts.tar -C ${{ env.TIMING_ROOT }} .
 
       - name: Download ${{ matrix.designs }}_${{ matrix.pdk }} Tarball
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: ${{ matrix.designs }}_${{ matrix.pdk }}-tarball
           path: /tmp
