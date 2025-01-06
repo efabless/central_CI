@@ -34,7 +34,7 @@ on:
           name: ${{ matrix.designs }}-tarball
           path: /tmp/${{ matrix.designs }}.tar
   
-  run_design:
+  run_designs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
