@@ -34,14 +34,14 @@ on:
           name: ${{ matrix.designs }}-tarball
           path: /tmp/${{ matrix.designs }}.tar
   
-  harden_designs:
+  run_design:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         pdk: ["sky130A", "sky130B"]
         designs: ["caravel_user_project", "openframe_timer_example"]
-    needs: [setup_env, download_designs]
+    needs: [download_designs]
     steps:
       - uses: actions/checkout@v3
 
