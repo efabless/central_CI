@@ -7,11 +7,12 @@ on:
   pull_request:
   workflow_dispatch:
   
-  download_designs:
+  run_designs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         designs: ["caravel_user_project", "openframe_timer_example"]
+        pdk: ["sky130A", "sky130B"]
     steps:
       - uses: actions/checkout@v3
 
@@ -23,33 +24,6 @@ on:
           mkdir -p ${{ env.DESIGN_PATH }}
           python3 -m pip install --upgrade --no-cache-dir volare
           python3 $GITHUB_WORKSPACE/.github/scripts/install_dep.py --json $GITHUB_WORKSPACE/.github/scripts/designs.json --output ${{ env.DESIGN_PATH }} --dependency ${{ matrix.designs }}
-
-      - name: Tarball Designs
-        run: |
-          tar -cf /tmp/${{ matrix.designs }}.tar -C $DESIGN_PATH/${{ matrix.designs }} .
-
-      - name: Upload ${{ matrix.designs }} Tarball
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ matrix.designs }}-tarball
-          path: /tmp/${{ matrix.designs }}.tar
-  
-  run_designs:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        pdk: ["sky130A", "sky130B"]
-        designs: ["caravel_user_project", "openframe_timer_example"]
-    needs: [download_designs]
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
 
       - name: Export Environment Variables
         run: |
