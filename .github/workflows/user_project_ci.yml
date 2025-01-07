@@ -1,11 +1,12 @@
 name: CI
 
 on:
-  push:    # Trigger on push
-  pull_request:    # Trigger on pull requests
-  workflow_dispatch:    # Allow manual trigger
-
-jobs:
+  # Runs on Every Push
+  push:
+  # Runs on Pull Requests
+  pull_request:
+  workflow_dispatch:
+  
   run_designs:
     runs-on: ubuntu-latest
     strategy:
@@ -15,6 +16,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
       - name: Export DESIGN PATH
         run: echo "DESIGN_PATH=/home/runner/work/designs" >> $GITHUB_ENV
 
@@ -23,6 +30,16 @@ jobs:
           mkdir -p ${{ env.DESIGN_PATH }}
           python3 -m pip install --upgrade --no-cache-dir volare
           python3 $GITHUB_WORKSPACE/.github/scripts/install_dep.py --json $GITHUB_WORKSPACE/.github/scripts/designs.json --output ${{ env.DESIGN_PATH }} --dependency ${{ matrix.designs }}
+
+      - name: Tarball Designs
+        run: |
+          tar -cf /tmp/${{ matrix.designs }}.tar -C $DESIGN_PATH/${{ matrix.designs }} .
+
+      - name: Upload ${{ matrix.designs }} Tarball
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.designs }}-tarball
+          path: /tmp/${{ matrix.designs }}.tar
 
       - name: Export Environment Variables
         run: |
