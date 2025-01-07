@@ -30,16 +30,6 @@ jobs:
           python3 -m pip install --upgrade --no-cache-dir volare
           python3 $GITHUB_WORKSPACE/.github/scripts/install_dep.py --json $GITHUB_WORKSPACE/.github/scripts/designs.json --output ${{ env.DESIGN_PATH }} --dependency ${{ matrix.designs }}
 
-      - name: Tarball Designs
-        run: |
-          tar -cf /tmp/${{ matrix.designs }}.tar -C $DESIGN_PATH/${{ matrix.designs }} .
-
-      - name: Upload ${{ matrix.designs }} Tarball
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ matrix.designs }}-tarball
-          path: /tmp/${{ matrix.designs }}.tar
-
       - name: Export Environment Variables
         run: |
           echo "DESIGN_PATH=/home/runner/work/designs/${{ matrix.designs }}" >> $GITHUB_ENV
