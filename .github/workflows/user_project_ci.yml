@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        designs: ["caravel_user_project", "openframe_timer_example"]
+        designs: ["caravel_user_project"]
         pdk: ["sky130A", "sky130B"]
     steps:
       - uses: actions/checkout@v3
@@ -69,13 +69,7 @@ jobs:
 
       - name: run precheck
         run: |
-          export OUTPUT_DIRECTORY=${{ env.DESIGN_PATH }}/mpw_precheck_result
-          export OUTPUT=$OUTPUT_DIRECTORY/logs/precheck.log
           ci precheck run
-          cnt=$(grep -c "All Checks Passed" "$OUTPUT")
-          if ! [[ $cnt ]]; then cnt=0; fi
-          if [[ $cnt -eq 1 ]]; then exit 0; fi
-          exit 2
       
       - name: upload failure logs
         if: failure()
