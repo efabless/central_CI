@@ -1,12 +1,11 @@
 name: CI
 
 on:
-  # Runs on Every Push
-  push:
-  # Runs on Pull Requests
-  pull_request:
-  workflow_dispatch:
-  
+  push:    # Trigger on push
+  pull_request:    # Trigger on pull requests
+  workflow_dispatch:    # Allow manual trigger
+
+jobs:
   run_designs:
     runs-on: ubuntu-latest
     strategy:
