@@ -67,11 +67,6 @@ jobs:
           path: |
             ${{ env.DESIGN_PATH }}/issue_reproducible.tar
 
-      - name: cleanup
-        run: |
-          cd ${{ env.DESIGN_PATH }}
-          rm -rf openlane/*/runs
-
       - name: run precheck
         run: |
           export OUTPUT_DIRECTORY=${{ env.DESIGN_PATH }}/mpw_precheck_result
