@@ -71,22 +71,32 @@ jobs:
         run: |
           ci precheck run
       
+      - name: Create tarball on failure
+        if: failure()
+        run: |
+          tar -cf ${{ env.DESIGN_PATH }}/precheck_failure_logs.tar -C ${{ env.DESIGN_PATH }}/precheck_result logs
+
       - name: upload failure logs
         if: failure()
         uses: actions/upload-artifact@v3
         with:
-          name: error
+          name: precheck-failure-logs
           path: |
-            /home/runner/work/${{ env.DESIGN_PATH }}/precheck_result/logs/*
+            ${{ env.DESIGN_PATH }}/precheck_failure_logs.tar
 
       - name: run sta
         run: |
           ci sta run
 
+      - name: Create STA tarball on failure
+        if: failure()
+        run: |
+          tar -cf ${{ env.DESIGN_PATH }}/sta_failure_logs.tar -C ${{ env.DESIGN_PATH }}/logs .
+
       - name: upload sta reports
         if: failure()
         uses: actions/upload-artifact@v3
         with:
-          name: sta-reports
+          name: sta-failure-logs
           path: |
-            /home/runner/work/${{ env.DESIGN_PATH }}/logs/*
+            ${{ env.DESIGN_PATH }}/sta_failure_logs.tar
