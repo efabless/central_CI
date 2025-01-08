@@ -1,47 +1,25 @@
 name: CI
 
 on:
-  # Runs on Every Push
-  push:
-  # Runs on Pull Requests
-  pull_request:
-  workflow_dispatch:
+  push:    # Trigger on push
+  pull_request:    # Trigger on pull requests
+  workflow_dispatch:    # Allow manual trigger
 
 jobs:
-  setup_env:
+  run_designs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dependencies: ["OpenLane", "pdk", "precheck", "timing_scripts"]
+        designs: ["caravel_user_project"]
+        pdk: ["sky130A", "sky130B"]
     steps:
       - uses: actions/checkout@v3
 
-      - name: Export Dependencies Path
-        run: echo "DEPENDENCIES_PATH=/home/runner/work/dependencies" >> $GITHUB_ENV
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
 
-      - name: Download Dependencies
-        run: |
-          mkdir -p ${{ env.DEPENDENCIES_PATH }}
-          python3 -m pip install --upgrade --no-cache-dir volare
-          python3 $GITHUB_WORKSPACE/.github/scripts/install_dep.py --json $GITHUB_WORKSPACE/tools.json --output ${{ env.DEPENDENCIES_PATH }} --dependency ${{ matrix.dependencies }}
-
-      - name: Tarball ${{ matrix.dependencies }}
-        run: |
-          tar -cf /tmp/${{ matrix.dependencies }}.tar -C $DEPENDENCIES_PATH/${{ matrix.dependencies }} .
-
-      - name: Upload ${{ matrix.dependencies }} Tarball
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ matrix.dependencies }}-tarball
-          path: /tmp/${{ matrix.dependencies }}.tar
-  
-  download_designs:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        designs: ["caravel_user_project", "openframe_timer_example"]
-    steps:
-      - uses: actions/checkout@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
 
       - name: Export DESIGN PATH
         run: echo "DESIGN_PATH=/home/runner/work/designs" >> $GITHUB_ENV
@@ -52,374 +30,73 @@ jobs:
           python3 -m pip install --upgrade --no-cache-dir volare
           python3 $GITHUB_WORKSPACE/.github/scripts/install_dep.py --json $GITHUB_WORKSPACE/.github/scripts/designs.json --output ${{ env.DESIGN_PATH }} --dependency ${{ matrix.designs }}
 
-      - name: Tarball Designs
-        run: |
-          tar -cf /tmp/${{ matrix.designs }}.tar -C $DESIGN_PATH/${{ matrix.designs }} .
-
-      - name: Upload ${{ matrix.designs }} Tarball
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ matrix.designs }}-tarball
-          path: /tmp/${{ matrix.designs }}.tar
-  
-  download_caravel:
-    runs-on: ubuntu-latest
-    needs: [setup_env, download_designs]
-    strategy:
-      matrix:
-        dependencies: ["caravel"]
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Export Dependencies Path
-        run: echo "DEPENDENCIES_PATH=/home/runner/work/dependencies" >> $GITHUB_ENV
-
-      - name: Download Dependencies
-        run: |
-          mkdir -p ${{ env.DEPENDENCIES_PATH }}
-          python3 -m pip install --upgrade --no-cache-dir volare
-          python3 $GITHUB_WORKSPACE/.github/scripts/install_dep.py --json $GITHUB_WORKSPACE/tools.json --output ${{ env.DEPENDENCIES_PATH }} --dependency ${{ matrix.dependencies }}
-
-      - name: Tarball ${{ matrix.dependencies }}
-        run: |
-          tar -cf /tmp/${{ matrix.dependencies }}.tar -C $DEPENDENCIES_PATH/${{ matrix.dependencies }} .
-
-      - name: Upload ${{ matrix.dependencies }} Tarball
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ matrix.dependencies }}-tarball
-          path: /tmp/${{ matrix.dependencies }}.tar
-  
-  download_mcw:
-    runs-on: ubuntu-latest
-    needs: [setup_env, download_designs]
-    strategy:
-      matrix:
-        dependencies: ["mgmt_core_wrapper"]
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Export Dependencies Path
-        run: echo "DEPENDENCIES_PATH=/home/runner/work/dependencies" >> $GITHUB_ENV
-
-      - name: Download Dependencies
-        run: |
-          mkdir -p ${{ env.DEPENDENCIES_PATH }}
-          python3 -m pip install --upgrade --no-cache-dir volare
-          python3 $GITHUB_WORKSPACE/.github/scripts/install_dep.py --json $GITHUB_WORKSPACE/tools.json --output ${{ env.DEPENDENCIES_PATH }} --dependency ${{ matrix.dependencies }}
-
-      - name: Tarball ${{ matrix.dependencies }}
-        run: |
-          tar -cf /tmp/${{ matrix.dependencies }}.tar -C $DEPENDENCIES_PATH/${{ matrix.dependencies }} .
-
-      - name: Upload ${{ matrix.dependencies }} Tarball
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ matrix.dependencies }}-tarball
-          path: /tmp/${{ matrix.dependencies }}.tar
-  
-  harden_designs:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        pdk: ["sky130A", "sky130B"]
-        designs: ["caravel_user_project", "openframe_timer_example"]
-    needs: [setup_env, download_designs]
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-
       - name: Export Environment Variables
         run: |
-          echo "PDK_ROOT=/home/runner/work/dependencies/pdk" >> $GITHUB_ENV
-          echo "OPENLANE_ROOT=/home/runner/work/dependencies/OpenLane" >> $GITHUB_ENV
-          echo "PDK=${{ matrix.pdk }}" >> $GITHUB_ENV
-          echo "DEPENDENCIES_PATH=/home/runner/work/dependencies" >> $GITHUB_ENV
           echo "DESIGN_PATH=/home/runner/work/designs/${{ matrix.designs }}" >> $GITHUB_ENV
 
-      - name: Download OpenLane Tarball
-        uses: actions/download-artifact@v3
-        with:
-          name: OpenLane-tarball
-          path: /tmp
-
-      - name: Unpack OpenLane Tarball
+      - name: Install chipIgnite tool
         run: |
-          sudo mkdir -p ${{ env.DEPENDENCIES_PATH }}/OpenLane
-          sudo chown -R $USER:$USER ${{ env.DEPENDENCIES_PATH }}/OpenLane
-          tar -xf /tmp/OpenLane.tar -C ${{ env.DEPENDENCIES_PATH }}/OpenLane .\
+          git clone https://x-access-token:${{ secrets.MY_TOKEN }}@github.com/efabless/chipignite.git
+          cd chipignite
+          pip install .
+          cd ..
 
-      - name: Download pdk Tarball
-        uses: actions/download-artifact@v3
-        with:
-          name: pdk-tarball
-          path: /tmp
-
-      - name: Unpack pdk Tarball
-        run: |
-          sudo mkdir -p ${{ env.DEPENDENCIES_PATH }}/pdk
-          sudo chown -R $USER:$USER ${{ env.DEPENDENCIES_PATH }}/pdk
-          tar -xf /tmp/pdk.tar -C ${{ env.DEPENDENCIES_PATH }}/pdk .
-
-      - name: Download ${{ matrix.designs }} Tarball
-        uses: actions/download-artifact@v3
-        with:
-          name: ${{ matrix.designs }}-tarball
-          path: /tmp
-
-      - name: Unpack ${{ matrix.designs }} Tarball
-        run: |
-          sudo mkdir -p ${{ env.DESIGN_PATH }}
-          sudo chown -R $USER:$USER ${{ env.DESIGN_PATH }}
-          tar -xf /tmp/${{ matrix.designs }}.tar -C ${{ env.DESIGN_PATH }} .
-
-      - name: setup openlane
-        run: |
-          json_file=$(cat $GITHUB_WORKSPACE/tools.json)
-          openlane_commit=$(echo "${json_file}" | jq -r ".OpenLane.commit")
-          export OPENLANE_IMAGE_NAME=efabless/openlane:${openlane_commit}
-          export IMAGE_NAME=efabless/openlane:${openlane_commit}
-          echo "OPENLANE_IMAGE_NAME=efabless/openlane:${openlane_commit}" >> $GITHUB_ENV
-          echo "IMAGE_NAME=efabless/openlane:${openlane_commit}" >> $GITHUB_ENV
-          cd ${{ env.OPENLANE_ROOT }}
-          make pull-openlane
-
-
-      - name: harden
+      - name: setup environment
         run: |
           cd ${{ env.DESIGN_PATH }}
-          python3 $GITHUB_WORKSPACE/.github/scripts/get_designs.py --design ${{ env.DESIGN_PATH }}
-          for word in $(cat harden_sequence.txt); do
-            echo "CURRENT_DESIGN=${word}" >> $GITHUB_ENV
-            make $word
-          done
+          ci setup
 
-      - name: Create reproducible
-        if: failure()
-        run: tar -cf ${{ env.DESIGN_PATH }}/issue_reproducible.tar -C ${{ env.DESIGN_PATH }}/openlane/${{ env.CURRENT_DESIGN }}/runs/${{ env.CURRENT_DESIGN }}/issue_reproducible .
+      # - name: harden
+      #   run: |
+      #     cd ${{ env.DESIGN_PATH }}
+      #     python3 $GITHUB_WORKSPACE/.github/scripts/get_designs.py --design ${{ env.DESIGN_PATH }}
+      #     for word in $(cat harden_sequence.txt); do
+      #       echo "CURRENT_DESIGN=${word}" >> $GITHUB_ENV
+      #       ci openlane run $word
+      #     done
+
+      # - name: Create reproducible
+      #   if: failure()
+      #   run: tar -cf ${{ env.DESIGN_PATH }}/issue_reproducible.tar -C ${{ env.DESIGN_PATH }}/openlane/${{ env.CURRENT_DESIGN }}/runs/${{ env.CURRENT_DESIGN }}/issue_reproducible .
       
-      - name: upload failure logs
-        if: failure()
-        uses: actions/upload-artifact@v3
-        with:
-          name: openlane-issue-reproducible
-          path: |
-            ${{ env.DESIGN_PATH }}/issue_reproducible.tar
-
-      - name: cleanup
-        run: |
-          cd ${{ env.DESIGN_PATH }}
-          rm -rf openlane/*/runs
-
-      - name: Tarball Designs
-        run: |
-          tar -cf /tmp/${{ matrix.designs }}_${{ matrix.pdk }}.tar -C $DESIGN_PATH .
-
-      - name: Upload ${{ matrix.designs }}_${{ matrix.pdk }} Tarball
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ matrix.designs }}_${{ matrix.pdk }}-tarball
-          path: /tmp/${{ matrix.designs }}_${{ matrix.pdk }}.tar
-  
-  run_precheck:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        pdk: ["sky130A", "sky130B"]
-        designs: ["caravel_user_project", "openframe_timer_example"]
-    needs: [harden_designs]
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-
-      - name: Export Environment Variables
-        run: |
-          echo "PRECHECK_ROOT=/home/runner/work/dependencies/precheck" >> $GITHUB_ENV
-          echo "PDK_ROOT=/home/runner/work/dependencies/pdk" >> $GITHUB_ENV
-          echo "PDK=${{ matrix.pdk }}" >> $GITHUB_ENV
-          echo "DEPENDENCIES_PATH=/home/runner/work/dependencies" >> $GITHUB_ENV
-          echo "DESIGN_PATH=/home/runner/work/designs/${{ matrix.designs }}" >> $GITHUB_ENV
-
-      - name: Download pdk Tarball
-        uses: actions/download-artifact@v3
-        with:
-          name: pdk-tarball
-          path: /tmp
-
-      - name: Unpack pdk Tarball
-        run: |
-          sudo mkdir -p ${{ env.DEPENDENCIES_PATH }}/pdk
-          sudo chown -R $USER:$USER ${{ env.DEPENDENCIES_PATH }}/pdk
-          tar -xf /tmp/pdk.tar -C ${{ env.DEPENDENCIES_PATH }}/pdk .
-
-      - name: Download ${{ matrix.designs }}_${{ matrix.pdk }} Tarball
-        uses: actions/download-artifact@v3
-        with:
-          name: ${{ matrix.designs }}_${{ matrix.pdk }}-tarball
-          path: /tmp
-
-      - name: Unpack ${{ matrix.designs }}_${{ matrix.pdk }} Tarball
-        run: |
-          sudo mkdir -p ${{ env.DESIGN_PATH }}
-          sudo chown -R $USER:$USER ${{ env.DESIGN_PATH }}
-          tar -xf /tmp/${{ matrix.designs }}_${{ matrix.pdk }}.tar -C ${{ env.DESIGN_PATH }} .
-
-      - name: Download precheck Tarball
-        uses: actions/download-artifact@v3
-        with:
-          name: precheck-tarball
-          path: /tmp
-
-      - name: Unpack precheck Tarball
-        run: |
-          sudo mkdir -p ${{ env.PRECHECK_ROOT }}
-          sudo chown -R $USER:$USER ${{ env.PRECHECK_ROOT }}
-          tar -xf /tmp/precheck.tar -C ${{ env.PRECHECK_ROOT }} .
+      # - name: upload failure logs
+      #   if: failure()
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: openlane-issue-reproducible
+      #     path: |
+      #       ${{ env.DESIGN_PATH }}/issue_reproducible.tar
 
       - name: run precheck
         run: |
-          export OUTPUT_DIRECTORY=${{ env.DESIGN_PATH }}/mpw_precheck_result
-          export OUTPUT=$OUTPUT_DIRECTORY/logs/precheck.log
-          docker run -v "${{ env.PRECHECK_ROOT }}":"${{ env.PRECHECK_ROOT }}" -v "${{ env.DESIGN_PATH }}":"${{ env.DESIGN_PATH }}" -v "${{ env.PDK_ROOT }}":"${{ env.PDK_ROOT }}" -e INPUT_DIRECTORY="${{ env.DESIGN_PATH }}" -e PDK_ROOT="${{ env.PDK_ROOT }}" -e PDKPATH="${{ env.PDK_ROOT }}/${{ env.PDK }}" -u $(id -u "$USER"):$(id -g "$USER") efabless/mpw_precheck:latest bash -c "cd ${{ env.PRECHECK_ROOT }}; python3 mpw_precheck.py --input_directory ${{ env.DESIGN_PATH }} --pdk_path ${{ env.PDK_ROOT }}/${{ env.PDK }} --output_directory $OUTPUT_DIRECTORY license makefile consistency xor magic_drc klayout_beol klayout_feol klayout_met_min_ca_density klayout_offgrid klayout_pin_label_purposes_overlapping_drawing klayout_zeroarea lvs"
-          cnt=$(grep -c "All Checks Passed" "$OUTPUT")
-          if ! [[ $cnt ]]; then cnt=0; fi
-          if [[ $cnt -eq 1 ]]; then exit 0; fi
-          exit 2
+          ci precheck run
       
+      - name: Create tarball on failure
+        if: failure()
+        run: |
+          tar -cf ${{ env.DESIGN_PATH }}/precheck_failure_logs.tar -C ${{ env.DESIGN_PATH }}/precheck_result logs
+
       - name: upload failure logs
         if: failure()
         uses: actions/upload-artifact@v3
         with:
-          name: error
+          name: precheck-failure-logs
           path: |
-            /home/runner/work/${{ env.DESIGN_PATH }}/mpw_precheck_result/logs/*
-  
-  run_sta:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        pdk: ["sky130A"]
-        designs: ["caravel_user_project"]
-    needs: [harden_designs, download_caravel, download_mcw]
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-
-      - name: Export Environment Variables
-        run: |
-          echo "CARAVEL_ROOT=/home/runner/work/dependencies/caravel" >> $GITHUB_ENV
-          echo "MCW_ROOT=/home/runner/work/dependencies/mgmt_core_wrapper" >> $GITHUB_ENV
-          echo "TIMING_ROOT=/home/runner/work/dependencies/timing_scripts" >> $GITHUB_ENV
-          echo "PDK_ROOT=/home/runner/work/dependencies/pdk" >> $GITHUB_ENV
-          echo "PDK=${{ matrix.pdk }}" >> $GITHUB_ENV
-          echo "DEPENDENCIES_PATH=/home/runner/work/dependencies" >> $GITHUB_ENV
-          echo "DESIGN_PATH=/home/runner/work/designs/${{ matrix.designs }}" >> $GITHUB_ENV
-
-      - name: Download pdk Tarball
-        uses: actions/download-artifact@v3
-        with:
-          name: pdk-tarball
-          path: /tmp
-
-      - name: Unpack pdk Tarball
-        run: |
-          sudo mkdir -p ${{ env.DEPENDENCIES_PATH }}/pdk
-          sudo chown -R $USER:$USER ${{ env.DEPENDENCIES_PATH }}/pdk
-          tar -xf /tmp/pdk.tar -C ${{ env.DEPENDENCIES_PATH }}/pdk .
-
-      - name: Download caravel Tarball
-        uses: actions/download-artifact@v3
-        with:
-          name: caravel-tarball
-          path: /tmp
-
-      - name: Unpack caravel Tarball
-        run: |
-          sudo mkdir -p ${{ env.CARAVEL_ROOT }}
-          sudo chown -R $USER:$USER ${{ env.CARAVEL_ROOT }}
-          tar -xf /tmp/caravel.tar -C ${{ env.CARAVEL_ROOT }} .
-
-      - name: Download mgmt_core_wrapper Tarball
-        uses: actions/download-artifact@v3
-        with:
-          name: mgmt_core_wrapper-tarball
-          path: /tmp
-
-      - name: Unpack mgmt_core_wrapper Tarball
-        run: |
-          sudo mkdir -p ${{ env.MCW_ROOT }}
-          sudo chown -R $USER:$USER ${{ env.MCW_ROOT }}
-          tar -xf /tmp/mgmt_core_wrapper.tar -C ${{ env.MCW_ROOT }} .
-
-      - name: Download timing_scripts Tarball
-        uses: actions/download-artifact@v3
-        with:
-          name: timing_scripts-tarball
-          path: /tmp
-
-      - name: Unpack timing_scripts Tarball
-        run: |
-          sudo mkdir -p ${{ env.TIMING_ROOT }}
-          sudo chown -R $USER:$USER ${{ env.TIMING_ROOT }}
-          tar -xf /tmp/timing_scripts.tar -C ${{ env.TIMING_ROOT }} .
-
-      - name: Download ${{ matrix.designs }}_${{ matrix.pdk }} Tarball
-        uses: actions/download-artifact@v3
-        with:
-          name: ${{ matrix.designs }}_${{ matrix.pdk }}-tarball
-          path: /tmp
-
-      - name: Unpack ${{ matrix.designs }}_${{ matrix.pdk }} Tarball
-        run: |
-          sudo mkdir -p ${{ env.DESIGN_PATH }}
-          sudo chown -R $USER:$USER ${{ env.DESIGN_PATH }}
-          tar -xf /tmp/${{ matrix.designs }}_${{ matrix.pdk }}.tar -C ${{ env.DESIGN_PATH }} .
+            ${{ env.DESIGN_PATH }}/precheck_failure_logs.tar
 
       - name: run sta
         run: |
-          export CUP_ROOT=${{ env.DESIGN_PATH }}
-          export PROJECT_ROOT=${{ env.DESIGN_PATH }}
-          cd $CUP_ROOT
-          make extract-parasitics
-          make create-spef-mapping
-          make caravel-sta
-          tar -cf /tmp/timing.tar $CUP_ROOT/signoff/caravel/openlane-signoff/timing
-          find $CUP_ROOT/signoff/caravel/openlane-signoff/timing/*/ -name "summary.log" | head -n1 \
-            | xargs head -n5 | tail -n1 > $CUP_ROOT/signoff/caravel/openlane-signoff/timing/all-summary.rpt
-          find $CUP_ROOT/signoff/caravel/openlane-signoff/timing/*/ -name "summary.log" \
-            | xargs -I {} bash -c "head -n7 {} | tail -n1" >> $CUP_ROOT/signoff/caravel/openlane-signoff/timing/all-summary.rpt
-          vio=$(grep -c "vio(" $CUP_ROOT/signoff/caravel/openlane-signoff/timing/all-summary.rpt || true)
-          if [[ $vio -gt 0 ]];
-          then 
-            echo "STA violation count: $vio"
-            exit 2 
-          else
-            echo "STA run passed"
-            exit 0
-          fi
+          ci sta run
+
+      - name: Create STA tarball on failure
+        if: failure()
+        run: |
+          tar -cf ${{ env.DESIGN_PATH }}/sta_failure_logs.tar -C ${{ env.DESIGN_PATH }}/logs .
 
       - name: upload sta reports
         if: failure()
         uses: actions/upload-artifact@v3
         with:
-          name: sta-reports
+          name: sta-failure-logs
           path: |
-            /tmp/timing.tar
+            ${{ env.DESIGN_PATH }}/sta_failure_logs.tar
