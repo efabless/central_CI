@@ -59,13 +59,13 @@ jobs:
       #   if: failure()
       #   run: tar -cf ${{ env.DESIGN_PATH }}/issue_reproducible.tar -C ${{ env.DESIGN_PATH }}/openlane/${{ env.CURRENT_DESIGN }}/runs/${{ env.CURRENT_DESIGN }}/issue_reproducible .
       
-      - name: upload failure logs
-        if: failure()
-        uses: actions/upload-artifact@v3
-        with:
-          name: openlane-issue-reproducible
-          path: |
-            ${{ env.DESIGN_PATH }}/issue_reproducible.tar
+      # - name: upload failure logs
+      #   if: failure()
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: openlane-issue-reproducible
+      #     path: |
+      #       ${{ env.DESIGN_PATH }}/issue_reproducible.tar
 
       - name: run precheck
         run: |
@@ -77,7 +77,7 @@ jobs:
         with:
           name: error
           path: |
-            /home/runner/work/${{ env.DESIGN_PATH }}/mpw_precheck_result/logs/*
+            /home/runner/work/${{ env.DESIGN_PATH }}/precheck_result/logs/*
 
       - name: run sta
         run: |
@@ -89,4 +89,4 @@ jobs:
         with:
           name: sta-reports
           path: |
-            /tmp/timing.tar
+            /home/runner/work/${{ env.DESIGN_PATH }}/logs/*
